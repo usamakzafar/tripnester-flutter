@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/auth/sign_in_screen.dart';
 import '../../presentation/auth/register_screen.dart';
+import '../../presentation/home/home_screen.dart';
 import '../session/session_controller.dart';
 
 /// Splash screen shown during session restoration
@@ -91,55 +92,8 @@ GoRouter createAppRouter(WidgetRef ref) {
       ),
       GoRoute(
         path: '/',
-        builder: (_, __) => const _Home(),
+        builder: (_, __) => const HomeScreen(),
       ),
     ],
-  );
-}
-
-class _Home extends StatelessWidget {
-  const _Home();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('TripNester'),
-      actions: [
-        Consumer(
-          builder: (context, ref, child) {
-            return IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () async {
-                await ref.read(sessionControllerProvider.notifier).signOut();
-              },
-            );
-          },
-        ),
-      ],
-    ),
-    body: Consumer(
-      builder: (context, ref, child) {
-        final session = ref.watch(sessionControllerProvider);
-        final user = session.user;
-
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Welcome to TripNester!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              if (user != null) ...[
-                const SizedBox(height: 16),
-                Text('Hello, ${user.name}!'),
-                Text('Email: ${user.email}'),
-                Text('Roles: ${user.roles.join(', ')}'),
-              ],
-            ],
-          ),
-        );
-      },
-    ),
   );
 }

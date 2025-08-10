@@ -12,6 +12,7 @@ class CustomTextField extends StatefulWidget {
     this.obscureText = false,
     this.onFieldSubmitted,
     this.autofillHints,
+    this.focusNode,
   });
 
   final TextEditingController controller;
@@ -23,6 +24,7 @@ class CustomTextField extends StatefulWidget {
   final bool obscureText;
   final void Function(String)? onFieldSubmitted;
   final List<String>? autofillHints;
+  final FocusNode? focusNode;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -67,6 +69,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       validator: _validateInput,
       onFieldSubmitted: widget.onFieldSubmitted,
       autofillHints: widget.autofillHints,
+      focusNode: widget.focusNode,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
