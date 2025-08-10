@@ -1,15 +1,21 @@
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/auth_tokens.dart';
+import '../../domain/mappers/user_mapper.dart';
 import '../datasources/remote/user_api.dart';
 import '../models/auth/login_request_dto.dart';
-import '../models/auth/user_dto.dart';
 import '../../core/session/token_store.dart';
+import '../../core/session/session_controller.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  UserRepositoryImpl({required this.userApi, required this.tokenStore});
+  UserRepositoryImpl({
+    required this.userApi,
+    required this.tokenStore,
+    required this.sessionController,
+  });
   final UserApi userApi;
   final TokenStore tokenStore;
+  final SessionController sessionController;
 
   @override
   Future<AppUser> login({
@@ -46,11 +52,25 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<AppUser> register({
-    required String username,
+    required String email,
     required String password,
     required String name,
   }) async {
-    // Implement when backend spec available; for now throw:
-    throw UnimplementedError('register not implemented');
+    final dto = await userApi.register(
+      email: email,
+      password: password,
+      name: name,
+    );
+    final user = dto.user.toDomain();
+    await tokenStore.setSession(
+      accessToken: dto.accessToken,
+      refreshToken: dto.refreshToken,
+    );
+    await sessionController.setAuthenticated(
+      user: user,
+      accessToken: dto.accessToken,
+      refreshToken: dto.refreshToken,
+    );
+    return user;
   }
 }

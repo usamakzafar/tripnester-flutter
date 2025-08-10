@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../di/injection_container.dart';
 import '../../data/datasources/remote/user_api.dart';
+import 'dart:developer' as developer;
 
 class AuthInterceptor extends Interceptor {
   final Ref ref;
@@ -17,6 +18,11 @@ class AuthInterceptor extends Interceptor {
     final accessToken = sessionState.accessToken;
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
+      // Temporary logging to verify Authorization header
+      developer.log('🔐 Auth header added: Authorization: Bearer ${accessToken.substring(0, 20)}...', name: 'AuthInterceptor');
+      developer.log('📝 Request headers: ${options.headers}', name: 'AuthInterceptor');
+    } else {
+      developer.log('⚠️ No access token available for request to ${options.path}', name: 'AuthInterceptor');
     }
     handler.next(options);
   }

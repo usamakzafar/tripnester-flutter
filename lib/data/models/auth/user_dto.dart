@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'role_dto.dart';
-import '../../../domain/entities/user.dart';
 
 part 'user_dto.freezed.dart';
 part 'user_dto.g.dart';
@@ -20,10 +19,4 @@ class UserDto with _$UserDto {
 
   factory UserDto.fromJson(Map<String, dynamic> json) =>
       _$UserDtoFromJson(json);
-}
-
-extension UserDtoToDomain on UserDto {
-  AppUser toDomain() {
-    return AppUser(id: id, username: username, name: name);
-  }
 }

@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../session/token_store.dart';
+import '../session/session_controller.dart';
 import '../network/auth_interceptor.dart';
 import '../../data/datasources/remote/user_api.dart';
 import '../../data/repositories_impl/user_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/authenticate_user.dart';
+import '../../domain/usecases/register_user.dart';
 
 /// Secure storage provider for token persistence.
 final secureStorageProvider = Provider<FlutterSecureStorage>(
@@ -47,12 +49,18 @@ final userRepositoryProvider = Provider<UserRepository>(
   (ref) => UserRepositoryImpl(
     userApi: ref.read(userApiProvider),
     tokenStore: ref.read(tokenStoreProvider.notifier),
+    sessionController: ref.read(sessionControllerProvider.notifier),
   ),
 );
 
 /// AuthenticateUser use case provider.
 final authenticateUserProvider = Provider(
   (ref) => AuthenticateUser(ref.read(userRepositoryProvider)),
+);
+
+/// RegisterUser use case provider.
+final registerUserProvider = Provider<RegisterUser>(
+  (ref) => RegisterUser(ref.read(userRepositoryProvider)),
 );
 
 /// TODO(di): Add providers for APIs (PropertiesApi, BookingApi),

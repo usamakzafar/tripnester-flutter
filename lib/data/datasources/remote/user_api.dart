@@ -3,6 +3,7 @@ import '../../models/auth/login_request_dto.dart';
 import '../../models/auth/login_response_dto.dart';
 import '../../models/auth/user_dto.dart';
 import '../../models/auth/refresh_response_dto.dart';
+import '../../models/auth/register_response_dto.dart';
 import '../../../core/network/api_exceptions.dart';
 
 class UserApi {
@@ -15,6 +16,18 @@ class UserApi {
       throw ApiException('Login failed', statusCode: res.statusCode);
     }
     return LoginResponseDto.fromJson(res.data as Map<String, dynamic>);
+  }
+
+  Future<RegisterResponseDto> register({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
+    final res = await _dio.post(
+      '/api/auth/register',
+      data: {'username': email, 'password': password, 'name': name},
+    );
+    return RegisterResponseDto.fromJson(res.data as Map<String, dynamic>);
   }
 
   Future<UserDto> me() async {

@@ -49,7 +49,7 @@ class AppTheme {
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
         labelStyle: const TextStyle(color: AppColors.charcoal),
-        hintStyle: TextStyle(color: AppColors.charcoal.withOpacity(0.6)),
+        hintStyle: TextStyle(color: AppColors.charcoal.withValues(alpha: 0.6)),
       );
 
     return ThemeData(
