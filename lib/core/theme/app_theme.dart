@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+
+class AppColors {
+  static const Color green = Color(0xFF004E4F); // Primary
+  static const Color bone = Color(0xFFFAF8F4); // Background / surface
+  static const Color orange = Color(0xFFFF6B4D); // Accent
+  static const Color mistGreen = Color(0xFFB5D2C3); // Secondary
+  static const Color charcoal = Color(0xFF2B2B2B); // Text
+}
+
+class AppTheme {
+  static ThemeData light() {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.green,
+      primary: AppColors.green,
+      onPrimary: AppColors.bone,
+      secondary: AppColors.mistGreen,
+      onSecondary: AppColors.charcoal,
+      error: AppColors.orange,
+      onError: AppColors.bone,
+      surface: AppColors.bone,
+      onSurface: AppColors.charcoal,
+      brightness: Brightness.light,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
+      appBarTheme: AppBarTheme(
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+      ),
+      textTheme: _textTheme(colorScheme),
+    );
+  }
+
+  static TextTheme _textTheme(ColorScheme colorScheme) {
+    return const TextTheme(
+      displayLarge: TextStyle(fontFamily: 'Roboto', fontSize: 57, fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(fontFamily: 'Roboto', fontSize: 45, fontWeight: FontWeight.bold),
+      displaySmall: TextStyle(fontFamily: 'Roboto', fontSize: 36, fontWeight: FontWeight.bold),
+      headlineLarge: TextStyle(fontFamily: 'Roboto', fontSize: 32, fontWeight: FontWeight.bold),
+      headlineMedium: TextStyle(fontFamily: 'Roboto', fontSize: 28, fontWeight: FontWeight.bold),
+      headlineSmall: TextStyle(fontFamily: 'Roboto', fontSize: 24, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(fontFamily: 'Roboto', fontSize: 22, fontWeight: FontWeight.w500),
+      titleMedium: TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w500),
+      titleSmall: TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w500),
+      bodyLarge: TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.normal),
+      bodyMedium: TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.normal),
+      bodySmall: TextStyle(fontFamily: 'Roboto', fontSize: 12, fontWeight: FontWeight.normal),
+      labelLarge: TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w500),
+      labelMedium: TextStyle(fontFamily: 'Roboto', fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: TextStyle(fontFamily: 'Roboto', fontSize: 11, fontWeight: FontWeight.w500),
+    ).apply(
+      bodyColor: colorScheme.onSurface,
+      displayColor: colorScheme.onSurface,
+    );
+  }
+}
