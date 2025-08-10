@@ -7,10 +7,14 @@ import 'package:dio/dio.dart';
 import '../session/session_controller.dart';
 import '../network/auth_interceptor.dart';
 import '../../data/datasources/remote/user_api.dart';
+import '../../data/datasources/remote/autocomplete_api.dart';
 import '../../data/repositories_impl/user_repository_impl.dart';
+import '../../data/repositories_impl/autocomplete_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../domain/repositories/autocomplete_repository.dart';
 import '../../domain/usecases/authenticate_user.dart';
 import '../../domain/usecases/register_user.dart';
+import '../../domain/usecases/get_autocomplete_suggestions.dart';
 
 /// Base Dio instance without interceptors for UserApi to avoid circular dependency.
 final baseDioProvider = Provider<Dio>((ref) {
@@ -33,6 +37,21 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(ref.read(authInterceptorProvider));
   return dio;
 });
+
+/// AutocompleteApi provider for autocomplete/search operations.
+final autocompleteApiProvider = Provider<AutocompleteApi>(
+  (ref) => AutocompleteApi(ref.read(dioProvider)),
+);
+
+/// AutocompleteRepository provider for autocomplete operations.
+final autocompleteRepositoryProvider = Provider<AutocompleteRepository>(
+  (ref) => AutocompleteRepositoryImpl(ref.read(autocompleteApiProvider)),
+);
+
+/// GetAutocompleteSuggestions use case provider.
+final getAutocompleteSuggestionsProvider = Provider<GetAutocompleteSuggestions>(
+  (ref) => GetAutocompleteSuggestions(ref.read(autocompleteRepositoryProvider)),
+);
 
 /// UserRepository provider for user-related operations.
 final userRepositoryProvider = Provider<UserRepository>(
