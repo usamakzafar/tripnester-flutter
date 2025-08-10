@@ -8,31 +8,35 @@ import '../../core/utils/error_message.dart';
 import '../../domain/entities/user.dart';
 import 'auth_providers.dart';
 
-
-class SignInScreen extends ConsumerStatefulWidget {
-  const SignInScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<SignInScreen> createState() => _SignInScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _SignInScreenState extends ConsumerState<SignInScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
   void _handleSubmit() {
     if (_formKey.currentState?.validate() == true) {
-      ref.read(signInControllerProvider.notifier).signIn(
-        _emailController.text,
-        _passwordController.text,
+      ref.read(registerControllerProvider.notifier).register(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
       );
     }
   }
@@ -43,7 +47,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    ref.listen<AsyncValue<AppUser?>>(signInControllerProvider, (previous, next) {
+    ref.listen<AsyncValue<AppUser?>>(registerControllerProvider, (previous, next) {
       next.when(
         data: (user) {
           if (user != null) {
@@ -51,7 +55,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           }
         },
         error: (error, _) {
-
           final message = getFriendlyErrorMessage(error);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -67,8 +70,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       );
     });
 
-    final signInState = ref.watch(signInControllerProvider);
-    final isLoading = signInState.isLoading;
+    final registerState = ref.watch(registerControllerProvider);
+    final isLoading = registerState.isLoading;
 
     return Scaffold(
       backgroundColor: AppColors.bone,
@@ -98,7 +101,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Welcome back',
+                    'Create your account',
                     style: textTheme.headlineLarge?.copyWith(
                       color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
@@ -106,7 +109,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sign in to continue',
+                    'It\'s fast and secure',
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onPrimary,
                     ),
@@ -126,7 +129,28 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     children: [
                       const SizedBox(height: 32),
 
-                      // Email field using CustomTextField
+                      // Name field
+                      CustomTextField(
+                        controller: _nameController,
+                        label: 'Full Name',
+                        hint: 'Enter your full name',
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.next,
+                        autofillHints: const [AutofillHints.name],
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter your full name';
+                          }
+                          if (value.trim().length < 2) {
+                            return 'Name must be at least 2 characters';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Email field
                       CustomTextField(
                         controller: _emailController,
                         label: 'Email Address',
@@ -136,7 +160,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         autofillHints: const [AutofillHints.email],
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your email address';
+                          }
+                          if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(value.trim())) {
+                            return 'Please enter a valid email address';
                           }
                           return null;
                         },
@@ -144,21 +171,41 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
                       const SizedBox(height: 16),
 
-                      // Password field using CustomTextField
+                      // Password field
                       CustomTextField(
                         controller: _passwordController,
                         label: 'Password',
-                        hint: 'Enter your password',
+                        hint: 'At least 8 characters',
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        autofillHints: const [AutofillHints.newPassword],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+                            return 'Password must be at least 8 characters with letters and numbers';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Confirm Password field
+                      CustomTextField(
+                        controller: _confirmPasswordController,
+                        label: 'Confirm Password',
+                        hint: 'Re-enter your password',
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        autofillHints: const [AutofillHints.password],
                         onFieldSubmitted: (_) => _handleSubmit(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return 'Please confirm your password';
                           }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
                           }
                           return null;
                         },
@@ -166,7 +213,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
                       const SizedBox(height: 32),
 
-                      // Sign in button using PrimaryButton
+                      // Register button
                       isLoading
                           ? FilledButton(
                               onPressed: null,
@@ -187,26 +234,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                               ),
                             )
                           : PrimaryButton(
-                              label: 'Sign In',
+                              label: 'Create account',
                               onPressed: _handleSubmit,
                             ),
 
                       const SizedBox(height: 24),
 
-                      // Footer - Link to Register
+                      // Footer - Link to Sign In
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Don\'t have an account? ',
+                            'Already have an account? ',
                             style: textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurface,
                             ),
                           ),
                           TextButton(
-                            onPressed: () => context.go('/register'),
+                            onPressed: () => context.go('/login'),
                             child: Text(
-                              'Create account',
+                              'Sign in',
                               style: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.w600,
