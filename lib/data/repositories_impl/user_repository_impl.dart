@@ -4,17 +4,28 @@ import '../../domain/entities/auth_tokens.dart';
 import '../../domain/mappers/user_mapper.dart';
 import '../datasources/remote/user_api.dart';
 import '../models/auth/login_request_dto.dart';
-import '../../core/session/token_store.dart';
 import '../../core/session/session_controller.dart';
+
+/// Authentication result containing user and tokens
+class AuthResult {
+  const AuthResult({
+    required this.user,
+    required this.accessToken,
+    required this.refreshToken,
+  });
+
+  final AppUser user;
+  final String accessToken;
+  final String refreshToken;
+}
 
 class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({
     required this.userApi,
-    required this.tokenStore,
     required this.sessionController,
   });
+
   final UserApi userApi;
-  final TokenStore tokenStore;
   final SessionController sessionController;
 
   @override
@@ -25,29 +36,17 @@ class UserRepositoryImpl implements UserRepository {
     final dto = await userApi.login(
       LoginRequestDto(username: username, password: password),
     );
-    await tokenStore.setSession(
+
+    final user = dto.user.toDomain();
+
+    // Save session using the session controller
+    await sessionController.signInOrRegisterSuccess(
+      user: user,
       accessToken: dto.accessToken,
       refreshToken: dto.refreshToken,
     );
-    return dto.user.toDomain();
-  }
 
-  @override
-  Future<void> logout() async {
-    await tokenStore.clear();
-  }
-
-  @override
-  Future<AppUser> me() async => (await userApi.me()).toDomain();
-
-  @override
-  Future<AuthTokens> refreshToken({required String refreshToken}) async {
-    final r = await userApi.refreshToken(refreshToken);
-    await tokenStore.setTokens(
-      accessToken: r.accessToken,
-      refreshToken: r.refreshToken,
-    );
-    return AuthTokens(access: r.accessToken, refresh: r.refreshToken);
+    return user;
   }
 
   @override
@@ -61,16 +60,30 @@ class UserRepositoryImpl implements UserRepository {
       password: password,
       name: name,
     );
+
     final user = dto.user.toDomain();
-    await tokenStore.setSession(
-      accessToken: dto.accessToken,
-      refreshToken: dto.refreshToken,
-    );
-    await sessionController.setAuthenticated(
+
+    // Save session using the session controller
+    await sessionController.signInOrRegisterSuccess(
       user: user,
       accessToken: dto.accessToken,
       refreshToken: dto.refreshToken,
     );
+
     return user;
+  }
+
+  @override
+  Future<void> logout() async {
+    await sessionController.signOut();
+  }
+
+  @override
+  Future<AppUser> me() async => (await userApi.me(sessionController.getAccessToken())).toDomain();
+
+  @override
+  Future<AuthTokens> refreshToken({required String refreshToken}) async {
+    final r = await userApi.refreshToken(refreshToken);
+    return AuthTokens(access: r.accessToken, refresh: r.refreshToken);
   }
 }

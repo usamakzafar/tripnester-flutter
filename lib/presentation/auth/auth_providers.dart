@@ -13,6 +13,7 @@ class SignInController extends StateNotifier<AsyncValue<AppUser?>> {
     state = const AsyncValue.loading();
     try {
       final user = await _auth(email: email, password: password);
+      // Session persistence is now handled in the repository layer
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -22,12 +23,14 @@ class SignInController extends StateNotifier<AsyncValue<AppUser?>> {
 
 class RegisterController extends StateNotifier<AsyncValue<AppUser?>> {
   RegisterController(this._register) : super(const AsyncValue.data(null));
+
   final RegisterUser _register;
 
   Future<void> register({required String email, required String password, required String name}) async {
     state = const AsyncValue.loading();
     try {
       final user = await _register(email: email, password: password, name: name);
+      // Session persistence is now handled in the repository layer
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

@@ -30,8 +30,13 @@ class UserApi {
     return RegisterResponseDto.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<UserDto> me() async {
-    final res = await _dio.get('/api/users/me');
+  Future<UserDto> me(String? accessToken) async {
+    // rest of the user API doesn't have access token, only this one
+    // so we pass it as an optional parameter
+    final options = accessToken != null
+        ? Options(headers: {'Authorization': 'Bearer $accessToken'})
+        : null;
+    final res = await _dio.get('/api/users/me', options: options);
     if (res.statusCode != 200) {
       throw ApiException('Me failed', statusCode: res.statusCode);
     }

@@ -73,8 +73,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return AuthBackHandler(
       onWillPop: _handleBackPress,
       child: OverlapAuthScaffold(
-        title: 'Create your account',
-        subtitle: 'It\'s fast and secure',
+        title: 'Let\'s get you started',
         logoAsset: 'assets/images/logos/logo-white.png',
         child: _RegisterForm(
           formKey: _formKey,

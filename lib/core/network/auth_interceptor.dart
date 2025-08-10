@@ -1,89 +1,73 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../di/injection_container.dart';
-import '../../data/datasources/remote/user_api.dart';
+import '../session/session_controller.dart';
 import 'dart:developer' as developer;
 
 class AuthInterceptor extends Interceptor {
+  AuthInterceptor({required this.ref});
+
   final Ref ref;
-  final UserApi userApi;
-
-  Future<void>? _refreshFuture;
-
-  AuthInterceptor({required this.ref, required this.userApi});
+  bool _isRefreshingToken = false;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final sessionState = ref.read(tokenStoreProvider);
-    final accessToken = sessionState.accessToken;
+    // Get current access token from session
+    final sessionController = ref.read(sessionControllerProvider.notifier);
+    final accessToken = sessionController.getAccessToken();
+
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
-      // Temporary logging to verify Authorization header
-      developer.log('🔐 Auth header added: Authorization: Bearer ${accessToken.substring(0, 20)}...', name: 'AuthInterceptor');
-      developer.log('📝 Request headers: ${options.headers}', name: 'AuthInterceptor');
-    } else {
-      developer.log('⚠️ No access token available for request to ${options.path}', name: 'AuthInterceptor');
+      developer.log('🔐 Added auth header to ${options.path}', name: 'AuthInterceptor');
     }
+
     handler.next(options);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401) {
-      final sessionState = ref.read(tokenStoreProvider);
-      final refreshToken = sessionState.refreshToken;
+    // Only handle 401 Unauthorized errors
+    if (err.response?.statusCode == 401 && !_isRefreshingToken) {
+      developer.log('🔒 401 error detected, attempting token refresh', name: 'AuthInterceptor');
 
-      if (refreshToken != null) {
-        try {
-          // Single-flight refresh: if refresh is ongoing, await the same future
-          if (_refreshFuture != null) {
-            await _refreshFuture;
-          } else {
-            _refreshFuture = _doRefresh();
-            await _refreshFuture;
-            _refreshFuture = null;
-          }
+      _isRefreshingToken = true;
 
-          // Retry original request with updated token
-          final newSessionState = ref.read(tokenStoreProvider);
-          final newAccessToken = newSessionState.accessToken;
+      try {
+        final sessionController = ref.read(sessionControllerProvider.notifier);
+        final refreshSuccess = await sessionController.refresh();
+
+        if (refreshSuccess) {
+          // Retry the original request with new token
+          final newAccessToken = sessionController.getAccessToken();
           if (newAccessToken != null) {
             final requestOptions = err.requestOptions;
             requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
 
+            developer.log('🔄 Retrying request with new token', name: 'AuthInterceptor');
+
+            // Create a new Dio instance to avoid interceptor loops
             final dio = Dio();
             final response = await dio.fetch(requestOptions);
             handler.resolve(response);
             return;
           }
-        } catch (e) {
-          // Refresh failed, clear tokens and continue with original error
-          await ref.read(tokenStoreProvider.notifier).clear();
         }
+
+        // Refresh failed, sign out user
+        developer.log('❌ Token refresh failed, signing out user', name: 'AuthInterceptor');
+        await sessionController.signOut();
+      } catch (e) {
+        developer.log('❌ Error during token refresh: $e', name: 'AuthInterceptor');
+        await ref.read(sessionControllerProvider.notifier).signOut();
+      } finally {
+        _isRefreshingToken = false;
       }
     }
 
     handler.next(err);
   }
-
-  Future<void> _doRefresh() async {
-    final sessionState = ref.read(tokenStoreProvider);
-    final refreshToken = sessionState.refreshToken;
-    if (refreshToken == null) {
-      throw Exception('No refresh token available');
-    }
-
-    try {
-      final response = await userApi.refreshToken(refreshToken);
-      await ref
-          .read(tokenStoreProvider.notifier)
-          .setTokens(
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          );
-    } catch (e) {
-      await ref.read(tokenStoreProvider.notifier).clear();
-      rethrow;
-    }
-  }
 }
+
+/// Provider for auth interceptor
+final authInterceptorProvider = Provider<AuthInterceptor>((ref) {
+  return AuthInterceptor(ref: ref);
+});
