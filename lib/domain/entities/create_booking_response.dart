@@ -3,4 +3,3 @@ class CreateBookingResponse {
 
   final String bookingId;
 }
-

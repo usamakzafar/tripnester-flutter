@@ -4,4 +4,3 @@ class AuthTokens {
   final String access;
   final String refresh;
 }
-

@@ -26,9 +26,10 @@ class UserApi {
   }
 
   Future<RefreshResponseDto> refreshToken(String refreshToken) async {
-    final res = await _dio.post('/api/auth/refresh_token', data: {
-      'refreshToken': refreshToken
-    });
+    final res = await _dio.post(
+      '/api/auth/refresh_token',
+      data: {'refreshToken': refreshToken},
+    );
     if (res.statusCode != 200) {
       throw ApiException('Refresh failed', statusCode: res.statusCode);
     }

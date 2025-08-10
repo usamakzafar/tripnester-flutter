@@ -5,4 +5,3 @@ class AppUser {
   final String username;
   final String? name;
 }
-

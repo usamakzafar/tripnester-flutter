@@ -9,10 +9,7 @@ class AuthInterceptor extends Interceptor {
 
   Future<void>? _refreshFuture;
 
-  AuthInterceptor({
-    required this.ref,
-    required this.userApi,
-  });
+  AuthInterceptor({required this.ref, required this.userApi});
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -72,7 +69,9 @@ class AuthInterceptor extends Interceptor {
 
     try {
       final response = await userApi.refreshToken(refreshToken);
-      await ref.read(tokenStoreProvider.notifier).setTokens(
+      await ref
+          .read(tokenStoreProvider.notifier)
+          .setTokens(
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
           );

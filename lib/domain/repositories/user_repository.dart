@@ -6,5 +6,9 @@ abstract class UserRepository {
   Future<AppUser> me();
   Future<void> logout();
   Future<AuthTokens> refreshToken({required String refreshToken});
-  Future<AppUser> register({required String username, required String password, required String name});
+  Future<AppUser> register({
+    required String username,
+    required String password,
+    required String name,
+  });
 }

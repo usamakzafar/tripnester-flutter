@@ -1,19 +1,22 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../presentation/auth/sign_in_screen.dart';
 
 GoRouter createAppRouter() {
-  // TODO(route): Add app routes/screens as they are implemented.
   return GoRouter(
-    routes: [GoRoute(path: '/', builder: (_, __) => const _Hello())],
+    initialLocation: '/login',
+    routes: [
+      GoRoute(path: '/login', builder: (_, __) => const SignInScreen()),
+      GoRoute(path: '/', builder: (_, __) => const _Home()),
+    ],
   );
 }
 
-class _Hello extends StatelessWidget {
-  const _Hello();
+class _Home extends StatelessWidget {
+  const _Home();
 
   @override
-  Widget build(BuildContext context) => const Directionality(
-    textDirection: TextDirection.ltr,
-    child: Center(child: Text('Hello TripNester')),
+  Widget build(BuildContext context) => const Scaffold(
+    body: Center(child: Text('Home - Welcome to TripNester!')),
   );
 }

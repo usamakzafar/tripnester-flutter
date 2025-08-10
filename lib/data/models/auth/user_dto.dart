@@ -24,10 +24,6 @@ class UserDto with _$UserDto {
 
 extension UserDtoToDomain on UserDto {
   AppUser toDomain() {
-    return AppUser(
-      id: id,
-      username: username,
-      name: name,
-    );
+    return AppUser(id: id, username: username, name: name);
   }
 }

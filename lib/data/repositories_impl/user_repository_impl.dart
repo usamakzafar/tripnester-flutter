@@ -12,8 +12,13 @@ class UserRepositoryImpl implements UserRepository {
   final TokenStore tokenStore;
 
   @override
-  Future<AppUser> login({required String username, required String password}) async {
-    final dto = await userApi.login(LoginRequestDto(username: username, password: password));
+  Future<AppUser> login({
+    required String username,
+    required String password,
+  }) async {
+    final dto = await userApi.login(
+      LoginRequestDto(username: username, password: password),
+    );
     await tokenStore.setSession(
       accessToken: dto.accessToken,
       refreshToken: dto.refreshToken,
@@ -32,12 +37,19 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<AuthTokens> refreshToken({required String refreshToken}) async {
     final r = await userApi.refreshToken(refreshToken);
-    await tokenStore.setTokens(accessToken: r.accessToken, refreshToken: r.refreshToken);
+    await tokenStore.setTokens(
+      accessToken: r.accessToken,
+      refreshToken: r.refreshToken,
+    );
     return AuthTokens(access: r.accessToken, refresh: r.refreshToken);
   }
 
   @override
-  Future<AppUser> register({required String username, required String password, required String name}) async {
+  Future<AppUser> register({
+    required String username,
+    required String password,
+    required String name,
+  }) async {
     // Implement when backend spec available; for now throw:
     throw UnimplementedError('register not implemented');
   }

@@ -4,4 +4,3 @@ class SearchResultItem {
   final String id;
   final String name;
 }
-

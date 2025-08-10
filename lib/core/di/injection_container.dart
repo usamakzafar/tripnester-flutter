@@ -9,10 +9,14 @@ import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/authenticate_user.dart';
 
 /// Secure storage provider for token persistence.
-final secureStorageProvider = Provider<FlutterSecureStorage>((_) => const FlutterSecureStorage());
+final secureStorageProvider = Provider<FlutterSecureStorage>(
+  (_) => const FlutterSecureStorage(),
+);
 
 /// Token store provider for session management.
-final tokenStoreProvider = StateNotifierProvider<TokenStore, SessionState>((ref) {
+final tokenStoreProvider = StateNotifierProvider<TokenStore, SessionState>((
+  ref,
+) {
   return TokenStore(ref.read(secureStorageProvider));
 });
 
@@ -22,13 +26,14 @@ final baseDioProvider = Provider<Dio>((ref) {
 });
 
 /// UserApi provider - uses base Dio without auth interceptor to avoid circular dependency.
-final userApiProvider = Provider<UserApi>((ref) => UserApi(ref.read(baseDioProvider)));
+final userApiProvider = Provider<UserApi>(
+  (ref) => UserApi(ref.read(baseDioProvider)),
+);
 
 /// Auth interceptor provider for handling token attachment and refresh.
-final authInterceptorProvider = Provider<AuthInterceptor>((ref) => AuthInterceptor(
-  ref: ref,
-  userApi: ref.read(userApiProvider),
-));
+final authInterceptorProvider = Provider<AuthInterceptor>(
+  (ref) => AuthInterceptor(ref: ref, userApi: ref.read(userApiProvider)),
+);
 
 /// Global Dio instance with auth interceptor for general API usage.
 final dioProvider = Provider<Dio>((ref) {
@@ -38,13 +43,17 @@ final dioProvider = Provider<Dio>((ref) {
 });
 
 /// UserRepository provider for user-related operations.
-final userRepositoryProvider = Provider<UserRepository>((ref) => UserRepositoryImpl(
-  userApi: ref.read(userApiProvider),
-  tokenStore: ref.read(tokenStoreProvider.notifier),
-));
+final userRepositoryProvider = Provider<UserRepository>(
+  (ref) => UserRepositoryImpl(
+    userApi: ref.read(userApiProvider),
+    tokenStore: ref.read(tokenStoreProvider.notifier),
+  ),
+);
 
 /// AuthenticateUser use case provider.
-final authenticateUserProvider = Provider((ref) => AuthenticateUser(ref.read(userRepositoryProvider)));
+final authenticateUserProvider = Provider(
+  (ref) => AuthenticateUser(ref.read(userRepositoryProvider)),
+);
 
 /// TODO(di): Add providers for APIs (PropertiesApi, BookingApi),
 /// repositories, and usecases as they are created.

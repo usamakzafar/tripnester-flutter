@@ -5,6 +5,6 @@ class AuthenticateUser {
   AuthenticateUser(this._repo);
   final UserRepository _repo;
 
-  Future<AppUser> call({required String username, required String password}) =>
-      _repo.login(username: username, password: password);
+  Future<AppUser> call({required String email, required String password}) =>
+      _repo.login(username: email, password: password);
 }

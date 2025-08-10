@@ -3,4 +3,3 @@ class PastBooking {
 
   final String bookingId;
 }
-
