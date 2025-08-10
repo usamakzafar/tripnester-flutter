@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_transitions.dart';
+
 class AppColors {
   static const Color green = Color(0xFF004E4F); // Primary
   static const Color bone = Color(0xFFFAF8F4); // Background / surface
@@ -61,7 +63,13 @@ class AppTheme {
         foregroundColor: colorScheme.onPrimary,
       ),
       textTheme: _textTheme(colorScheme),
-      inputDecorationTheme: inputDecorationTheme
+      inputDecorationTheme: inputDecorationTheme,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: SlideRightTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 

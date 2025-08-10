@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/ui_kit/layouts/overlap_auth_scaffold.dart';
 import '../../core/ui_kit/buttons/primary_button.dart';
 import '../../core/ui_kit/inputs/custom_text_field.dart';
 import '../../core/utils/error_message.dart';
+import '../../core/utils/auth_navigation_helper.dart';
 import '../../domain/entities/user.dart';
 import 'auth_providers.dart';
 
@@ -17,17 +17,17 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _nameController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _nameController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -41,28 +41,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
+  Future<bool> _handleBackPress() async {
+    AuthNavigationHelper.navigateToSignIn(context);
+    return false; // Prevent default back behavior
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen<AsyncValue<AppUser?>>(registerControllerProvider, (previous, next) {
       next.when(
         data: (user) {
           if (user != null) {
-            context.go('/');
+            AuthNavigationHelper.navigateToHome(context);
           }
         },
         error: (error, _) {
           final message = getFriendlyErrorMessage(error);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                message,
-                style: const TextStyle(color: Color(0xFFfaf8f4)), // Bone white text
-              ),
-              backgroundColor: const Color(0xFF004e4f), // Green background
+              content: Text(message),
+              backgroundColor: colorScheme.primary,
             ),
           );
         },
@@ -70,205 +70,171 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
     });
 
-    final registerState = ref.watch(registerControllerProvider);
-    final isLoading = registerState.isLoading;
-
-    return Scaffold(
-      backgroundColor: AppColors.bone,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header section (30% of screen)
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: AppColors.green,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo
-                  Image.asset(
-                    'assets/images/logos/logo-white.png',
-                    height: 84,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Icon(Icons.hotel, size: 48, color: colorScheme.onPrimary),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Create your account',
-                    style: textTheme.headlineLarge?.copyWith(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'It\'s fast and secure',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Form section
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 32),
-
-                      // Name field
-                      CustomTextField(
-                        controller: _nameController,
-                        label: 'Full Name',
-                        hint: 'Enter your full name',
-                        keyboardType: TextInputType.name,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.name],
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your full name';
-                          }
-                          if (value.trim().length < 2) {
-                            return 'Name must be at least 2 characters';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Email field
-                      CustomTextField(
-                        controller: _emailController,
-                        label: 'Email Address',
-                        hint: 'name@example.com',
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.email],
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your email address';
-                          }
-                          if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(value.trim())) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Password field
-                      CustomTextField(
-                        controller: _passwordController,
-                        label: 'Password',
-                        hint: 'At least 8 characters',
-                        obscureText: true,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.newPassword],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a password';
-                          }
-                          if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
-                            return 'Password must be at least 8 characters with letters and numbers';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Confirm Password field
-                      CustomTextField(
-                        controller: _confirmPasswordController,
-                        label: 'Confirm Password',
-                        hint: 'Re-enter your password',
-                        obscureText: true,
-                        textInputAction: TextInputAction.done,
-                        onFieldSubmitted: (_) => _handleSubmit(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // Register button
-                      isLoading
-                          ? FilledButton(
-                              onPressed: null,
-                              style: FilledButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                              ),
-                              child: const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.bone,
-                                ),
-                              ),
-                            )
-                          : PrimaryButton(
-                              label: 'Create account',
-                              onPressed: _handleSubmit,
-                            ),
-
-                      const SizedBox(height: 24),
-
-                      // Footer - Link to Sign In
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Already have an account? ',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => context.go('/login'),
-                            child: Text(
-                              'Sign in',
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+    return AuthBackHandler(
+      onWillPop: _handleBackPress,
+      child: OverlapAuthScaffold(
+        title: 'Create your account',
+        subtitle: 'It\'s fast and secure',
+        logoAsset: 'assets/images/logos/logo-white.png',
+        child: _RegisterForm(
+          formKey: _formKey,
+          name: _nameController,
+          email: _emailController,
+          password: _passwordController,
+          confirm: _confirmController,
+          onSubmit: _handleSubmit,
         ),
+      ),
+    );
+  }
+}
+
+class _RegisterForm extends ConsumerWidget {
+  const _RegisterForm({
+    required this.formKey,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.confirm,
+    required this.onSubmit,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController name;
+  final TextEditingController email;
+  final TextEditingController password;
+  final TextEditingController confirm;
+  final VoidCallback onSubmit;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final state = ref.watch(registerControllerProvider);
+    final isLoading = state.isLoading;
+
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 8),
+
+          // Name field
+          CustomTextField(
+            controller: name,
+            label: 'Full Name',
+            hint: 'Enter your full name',
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.name],
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your full name';
+              }
+              if (value.trim().length < 2) {
+                return 'Name must be at least 2 characters';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Email field
+          CustomTextField(
+            controller: email,
+            label: 'Email Address',
+            hint: 'name@example.com',
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.email],
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your email address';
+              }
+              if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(value.trim())) {
+                return 'Please enter a valid email address';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Password field
+          CustomTextField(
+            controller: password,
+            label: 'Password',
+            hint: 'At least 8 characters',
+            obscureText: true,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.newPassword],
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a password';
+              }
+              if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+                return 'Password must be at least 8 characters with letters and numbers';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Confirm Password field
+          CustomTextField(
+            controller: confirm,
+            label: 'Confirm Password',
+            hint: 'Re-enter your password',
+            obscureText: true,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => onSubmit(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please confirm your password';
+              }
+              if (value != password.text) {
+                return 'Passwords do not match';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 24),
+
+          // Register button
+          PrimaryButton(
+            label: isLoading ? 'Creating...' : 'Create account',
+            onPressed: isLoading ? null : onSubmit,
+          ),
+
+          const SizedBox(height: 16),
+
+          // Footer - Link to Sign In
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Already have an account? ',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              TextButton(
+                onPressed: () => AuthNavigationHelper.navigateToSignIn(context),
+                child: Text(
+                  'Sign in',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

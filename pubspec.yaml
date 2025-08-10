@@ -75,6 +75,9 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.14.1  # or latest
+
 # The following section is specific to Flutter packages.
 flutter:
   assets:
@@ -117,3 +120,27 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/images/thumbs/thumb-white-on-green.png
+  min_sdk_android: 21       # Android min SDK version
+  adaptive_icon_background: "#004E4F"   # green background
+  adaptive_icon_foreground: assets/images/thumbs/thumb-white-on-green.png
+
+flutter_native_splash:
+  color: "#004E4F"
+  image: assets/images/thumbs/thumb-white-on-green.png
+#  branding: assets/images/branding.png
+#  branding_mode: bottom
+  branding_mode: bottom
+  android: true
+  ios: true
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+  android_12:
+    color: "#004E4F"
+    image: assets/images/thumbs/thumb-white-on-green.png
+    branding: assets/images/logos/logo-white-padded.png
+  web: false
