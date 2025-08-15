@@ -77,7 +77,7 @@ class _SearchCardState extends ConsumerState<SearchCard> {
       children: [
         Text(
           'Let\'s find your perfect hotel',
-          style: theme.textTheme.headlineSmall?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
             color: colorScheme.primary,
           ),
