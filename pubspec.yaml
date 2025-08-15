@@ -87,6 +87,8 @@ flutter:
     - assets/images/logos/
     - assets/images/illustrations/
     - assets/images/thumbs/
+    - assets/images/sample/hotel/
+    - assets/images/sample/
     - assets/icons/
 
   # The following line ensures that the Material Icons font is

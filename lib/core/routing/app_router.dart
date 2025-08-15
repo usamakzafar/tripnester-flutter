@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/auth/sign_in_screen.dart';
 import '../../presentation/auth/register_screen.dart';
 import '../../presentation/home/home_screen.dart';
+import '../../presentation/search/search_screen.dart';
 import '../session/session_controller.dart';
 
 /// Splash screen shown during session restoration
@@ -93,6 +94,10 @@ GoRouter createAppRouter(WidgetRef ref) {
       GoRoute(
         path: '/',
         builder: (_, __) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (_, __) => const SearchScreen(),
       ),
     ],
   );

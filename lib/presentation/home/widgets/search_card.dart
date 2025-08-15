@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 import '../controllers/home_search_controller.dart';
 import '../controllers/autocomplete_overlay_controller.dart';
@@ -173,6 +174,7 @@ class _SearchCardState extends ConsumerState<SearchCard> {
           child: FilledButton.icon(
             onPressed: () {
               ref.read(homeSearchControllerProvider.notifier).submit();
+              context.go('/search'); // Navigate to search screen
             },
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.primary,
