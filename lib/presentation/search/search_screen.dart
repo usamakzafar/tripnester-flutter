@@ -10,8 +10,9 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: theme.colorScheme.onPrimary,
       appBar: AppBar(
         backgroundColor: const Color(0xFFFAF8F4),
         elevation: 0,

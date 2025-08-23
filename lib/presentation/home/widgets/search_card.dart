@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../controllers/home_search_controller.dart';
-import '../controllers/autocomplete_overlay_controller.dart';
-import '../../../core/ui_kit/inputs/custom_text_field.dart';
+import '../../ui_kit/destination_picker_field.dart';
 
 class SearchCard extends ConsumerStatefulWidget {
   const SearchCard({super.key});
@@ -16,42 +14,15 @@ class SearchCard extends ConsumerStatefulWidget {
 
 class _SearchCardState extends ConsumerState<SearchCard> {
   final _locationController = TextEditingController();
-  final _locationFocusNode = FocusNode();
-  final _locationFieldKey = GlobalKey();
-
-  late final AutocompleteOverlayController _overlayController;
-  bool _isSettingTextProgrammatically = false;
 
   @override
   void initState() {
     super.initState();
-    _overlayController = AutocompleteOverlayController();
-
-    // Listen to text changes but prevent autocomplete when setting text programmatically
-    _locationController.addListener(() {
-      if (!_isSettingTextProgrammatically) {
-        ref.read(homeSearchControllerProvider.notifier).setLocationText(_locationController.text);
-      }
-    });
-
-    _locationFocusNode.addListener(() {
-      if (!_locationFocusNode.hasFocus) {
-        _overlayController.hide();
-      } else {
-        // When field gets focus, sync the current text and trigger autocomplete if needed
-        final currentText = _locationController.text;
-        if (currentText.isNotEmpty) {
-          ref.read(homeSearchControllerProvider.notifier).setLocationText(currentText);
-        }
-      }
-    });
   }
 
   @override
   void dispose() {
     _locationController.dispose();
-    _locationFocusNode.dispose();
-    _overlayController.hide();
     super.dispose();
   }
 
@@ -59,16 +30,6 @@ class _SearchCardState extends ConsumerState<SearchCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    // Listen to autocomplete state changes
-    ref.listen<AsyncValue<HomeSearchState>>(homeSearchControllerProvider, (previous, next) {
-      final state = next.valueOrNull;
-      if (state != null && state.isAutocompleteOpen && state.suggestions.isNotEmpty) {
-        _showAutocompleteOverlay(state.suggestions);
-      } else {
-        _overlayController.hide();
-      }
-    });
 
     final searchState = ref.watch(homeSearchControllerProvider);
     final state = searchState.valueOrNull ?? const HomeSearchState();
@@ -85,16 +46,11 @@ class _SearchCardState extends ConsumerState<SearchCard> {
         ),
         const SizedBox(height: 16),
 
-        // Location Field
-        Container(
-          key: _locationFieldKey,
-          child: CustomTextField(
-            controller: _locationController,
-            focusNode: _locationFocusNode,
-            label: 'Destination',
-            hint: 'Search destinations, hotels...',
-            onFieldSubmitted: (_) => _locationFocusNode.unfocus(),
-          ),
+        // Destination Picker Field (read-only, opens SearchScreen)
+        DestinationPickerField(
+          controller: _locationController,
+          label: 'Destination',
+          hint: 'Search destinations, hotels...',
         ),
         const SizedBox(height: 16),
 
@@ -108,7 +64,6 @@ class _SearchCardState extends ConsumerState<SearchCard> {
               border: Border.all(color: colorScheme.outline),
               borderRadius: BorderRadius.circular(8),
               color: colorScheme.surface.withValues(alpha: 0.85),
-              // filled: true,
             ),
             child: Row(
               children: [
@@ -143,8 +98,7 @@ class _SearchCardState extends ConsumerState<SearchCard> {
             decoration: BoxDecoration(
               border: Border.all(color: colorScheme.outline),
               borderRadius: BorderRadius.circular(8),
-              color: colorScheme.surface.withOpacity(0.85),
-              // filled: true,
+              color: colorScheme.surface.withValues(alpha: 0.85),
             ),
             child: Row(
               children: [
@@ -195,95 +149,6 @@ class _SearchCardState extends ConsumerState<SearchCard> {
         ),
       ],
     );
-  }
-
-  void _showAutocompleteOverlay(List<AutocompleteSuggestion> suggestions) {
-    if (!mounted) return;
-
-    final renderBox = _locationFieldKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
-    final anchorRect = Rect.fromLTWH(position.dx, position.dy, size.width, size.height);
-
-    _overlayController.show(
-      context: context,
-      anchorRect: anchorRect,
-      child: Container(
-        constraints: const BoxConstraints(maxHeight: 200),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: suggestions.length,
-          itemBuilder: (context, index) {
-            final suggestion = suggestions[index];
-            return _buildSuggestionItem(suggestion);
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSuggestionItem(AutocompleteSuggestion suggestion) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return suggestion.when(
-      region: (region) => ListTile(
-        leading: SvgPicture.asset(
-          'assets/icons/ic_location.svg',
-          width: 20,
-          height: 20,
-          // colorFilter: ColorFilter.mode(
-          //   colorScheme.primary,
-          //   BlendMode.srcIn,
-          // ),
-        ),
-        title: Text(
-          region.name,
-          style: theme.textTheme.bodyLarge,
-        ),
-        subtitle: Text(
-          region.countryName,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        onTap: () => _selectSuggestion(region.name),
-      ),
-      property: (property) => ListTile(
-        leading: SvgPicture.asset(
-          'assets/icons/ic_hotel.svg',
-          width: 20,
-          height: 20,
-          // colorFilter: ColorFilter.mode(
-          //   colorScheme.primary,
-          //   BlendMode.srcIn,
-          // ),
-        ),
-        title: Text(
-          property.name,
-          style: theme.textTheme.bodyLarge,
-        ),
-        subtitle: Text(
-          property.regionName,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        onTap: () => _selectSuggestion(property.name),
-      ),
-    );
-  }
-
-  void _selectSuggestion(String name) {
-    _isSettingTextProgrammatically = true;
-    _locationController.text = name;
-    _isSettingTextProgrammatically = false;
-
-    // Close overlay and unfocus
-    _overlayController.hide();
-    _locationFocusNode.unfocus();
   }
 
   Future<void> _selectDateRange() async {
