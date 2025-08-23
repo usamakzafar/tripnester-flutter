@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'app_transitions.dart';
 
-class AppColors {
+class TripNesterColors {
   static const Color green = Color(0xFF004E4F); // Primary
   static const Color bone = Color(0xFFFAF8F4); // Background / surface
   static const Color orange = Color(0xFFFF6B4D); // Accent
@@ -13,32 +12,32 @@ class AppColors {
 class AppTheme {
   static ThemeData light() {
     final colorScheme = const ColorScheme(
-      primary: AppColors.green,
-      onPrimary: AppColors.bone,
-      secondary: AppColors.mistGreen,
-      onSecondary: AppColors.charcoal,
-      error: AppColors.orange,
-      onError: AppColors.bone,
-      surface: AppColors.bone,
-      onSurface: AppColors.charcoal,
+      primary: TripNesterColors.green,
+      onPrimary: TripNesterColors.bone,
+      secondary: TripNesterColors.mistGreen,
+      onSecondary: TripNesterColors.charcoal,
+      error: TripNesterColors.orange,
+      onError: TripNesterColors.bone,
+      surface: TripNesterColors.bone,
+      onSurface: TripNesterColors.charcoal,
       brightness: Brightness.light,
     );
 
     final inputDecorationTheme = InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.bone,
+        fillColor: TripNesterColors.bone,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.green),
+          borderSide: const BorderSide(color: TripNesterColors.green),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.green),
+          borderSide: const BorderSide(color: TripNesterColors.green),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(
-            color: AppColors.green,
+            color: TripNesterColors.green,
             width: 2,
           ),
         ),
@@ -50,8 +49,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
-        labelStyle: const TextStyle(color: AppColors.charcoal),
-        hintStyle: TextStyle(color: AppColors.charcoal.withValues(alpha: 0.6)),
+        labelStyle: const TextStyle(color: TripNesterColors.charcoal),
+        hintStyle: TextStyle(color: TripNesterColors.charcoal.withValues(alpha: 0.6)),
       );
 
     return ThemeData(

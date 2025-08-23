@@ -12,13 +12,9 @@ class SearchHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Back button
-          Container(
+          SizedBox(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFEFEFE),
-              shape: BoxShape.circle,
-            ),
             child: IconButton(
               onPressed: () => context.pop(), // Use go_router's pop for proper navigation
               icon: const Icon(

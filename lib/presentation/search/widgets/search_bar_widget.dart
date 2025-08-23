@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatefulWidget {
-  const SearchBarWidget({super.key});
+  const SearchBarWidget({super.key, this.onChanged, this.focusNode});
+
+  final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
@@ -41,6 +44,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   Expanded(
                     child: TextField(
                       controller: _searchController,
+                      onChanged: widget.onChanged,
+                      focusNode: widget.focusNode,
                       decoration: const InputDecoration(
                         hintText: 'Search...',
                         hintStyle: TextStyle(
@@ -78,7 +83,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           ),
 
           // Filter button
-          Container(
+          SizedBox(
             width: 50,
             height: 52,
             child: IconButton(
