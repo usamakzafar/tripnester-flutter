@@ -3,6 +3,21 @@ import 'package:json_annotation/json_annotation.dart';
 part 'search_request_dto.g.dart';
 
 @JsonSerializable()
+class SearchFiltersDto {
+  @JsonKey(name: 'starRating')
+  final List<int> starRating;
+
+  const SearchFiltersDto({
+    required this.starRating,
+  });
+
+  factory SearchFiltersDto.fromJson(Map<String, dynamic> json) =>
+      _$SearchFiltersDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SearchFiltersDtoToJson(this);
+}
+
+@JsonSerializable()
 class SearchRequestDto {
   @JsonKey(name: 'checkInDate')
   final String checkInDate; // ISO8601 format
@@ -47,19 +62,4 @@ class SearchRequestDto {
       _$SearchRequestDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$SearchRequestDtoToJson(this);
-}
-
-@JsonSerializable()
-class SearchFiltersDto {
-  @JsonKey(name: 'starRating')
-  final List<int>? starRating;
-
-  const SearchFiltersDto({
-    this.starRating,
-  });
-
-  factory SearchFiltersDto.fromJson(Map<String, dynamic> json) =>
-      _$SearchFiltersDtoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SearchFiltersDtoToJson(this);
 }

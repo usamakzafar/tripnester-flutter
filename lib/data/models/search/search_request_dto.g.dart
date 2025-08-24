@@ -6,6 +6,17 @@ part of 'search_request_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+SearchFiltersDto _$SearchFiltersDtoFromJson(Map<String, dynamic> json) =>
+    SearchFiltersDto(
+      starRating:
+          (json['starRating'] as List<dynamic>)
+              .map((e) => (e as num).toInt())
+              .toList(),
+    );
+
+Map<String, dynamic> _$SearchFiltersDtoToJson(SearchFiltersDto instance) =>
+    <String, dynamic>{'starRating': instance.starRating};
+
 SearchRequestDto _$SearchRequestDtoFromJson(Map<String, dynamic> json) =>
     SearchRequestDto(
       checkInDate: json['checkInDate'] as String,
@@ -36,14 +47,3 @@ Map<String, dynamic> _$SearchRequestDtoToJson(SearchRequestDto instance) =>
       'currency': instance.currency,
       'offset': instance.offset,
     };
-
-SearchFiltersDto _$SearchFiltersDtoFromJson(Map<String, dynamic> json) =>
-    SearchFiltersDto(
-      starRating:
-          (json['starRating'] as List<dynamic>?)
-              ?.map((e) => (e as num).toInt())
-              .toList(),
-    );
-
-Map<String, dynamic> _$SearchFiltersDtoToJson(SearchFiltersDto instance) =>
-    <String, dynamic>{'starRating': instance.starRating};

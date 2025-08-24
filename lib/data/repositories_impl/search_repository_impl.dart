@@ -1,15 +1,19 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/repositories/search_repository.dart';
 import '../../domain/entities/search/search_response.dart';
 import '../../core/network/api_exceptions.dart';
+import '../../core/config/currency_provider.dart';
 import '../models/search/search_request_dto.dart';
 import '../models/search/search_response_dto.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
   final Dio dio;
+  final Ref ref;
 
   const SearchRepositoryImpl({
     required this.dio,
+    required this.ref,
   });
 
   @override
@@ -22,10 +26,14 @@ class SearchRepositoryImpl implements SearchRepository {
     required int numberOfChildren,
     required String residency,
     List<int>? starRatings,
-    required String currency,
     int offset = 0,
+    String? currencyOverride,
   }) async {
     try {
+      // Get currency from centralized provider (synchronous)
+      final currencyCode = ref.read(currencyProvider.notifier).currentOrDefault.code;
+      final curr = currencyOverride ?? currencyCode;
+
       // Create the request DTO (dates must be YYYY-MM-DD)
       final requestDto = SearchRequestDto(
         checkInDate: _dateOnly(checkInDate),
@@ -37,7 +45,7 @@ class SearchRepositoryImpl implements SearchRepository {
         filters: starRatings != null
             ? SearchFiltersDto(starRating: starRatings)
             : null,
-        currency: currency,
+        currency: curr,
         offset: offset,
       );
 

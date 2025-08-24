@@ -79,7 +79,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
   int _adults = 2;
   int _children = 0;
   String _residency = 'US';
-  String _currency = 'USD';
 
   // Simple request token to ignore stale responses
   int _requestToken = 0;
@@ -98,9 +97,8 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     required int adults,
     required int children,
     required String residency,
-    required String currency,
   }) async {
-    // Save params
+    // Save params (currency is now handled automatically)
     _regionId = regionId;
     _checkIn = checkIn;
     _checkOut = checkOut;
@@ -108,7 +106,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     _adults = adults;
     _children = children;
     _residency = residency;
-    _currency = currency;
 
     final token = ++_requestToken;
 
@@ -126,8 +123,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfAdults: adults,
         numberOfChildren: children,
         residency: residency,
-        starRatings: filters.starRating.isEmpty ? null : filters.starRating,
-        currency: currency,
+        starRatings: filters.starRating.isNotEmpty ? filters.starRating : null,
         offset: 0,
       );
 
@@ -176,7 +172,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfChildren: _children,
         residency: _residency,
         starRatings: s.filters.starRating.isEmpty ? null : s.filters.starRating,
-        currency: _currency,
         offset: next,
       );
 
@@ -220,7 +215,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         adults: _adults,
         children: _children,
         residency: _residency,
-        currency: _currency,
       );
     }
   }
@@ -245,7 +239,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         adults: _adults,
         children: _children,
         residency: _residency,
-        currency: _currency,
       );
     }
   }
@@ -277,4 +270,3 @@ class ListingsController extends AsyncNotifier<ListingsState> {
 final listingsControllerProvider = AsyncNotifierProvider<ListingsController, ListingsState>(
   ListingsController.new,
 );
-

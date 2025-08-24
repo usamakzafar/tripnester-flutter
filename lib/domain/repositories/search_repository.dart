@@ -10,7 +10,7 @@ abstract class SearchRepository {
     required int numberOfChildren,
     required String residency,
     List<int>? starRatings,
-    required String currency,
     int offset = 0,
+    String? currencyOverride,
   });
 }

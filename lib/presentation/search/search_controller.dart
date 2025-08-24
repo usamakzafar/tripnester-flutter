@@ -23,7 +23,6 @@ class SearchController extends AsyncNotifier<SearchState> {
     required int numberOfChildren,
     required String residency,
     List<int>? starRatings,
-    required String currency,
   }) async {
     if (state.value?.isLoading == true) return;
     state = AsyncData(state.value!.copyWith(isLoading: true, errorMessage: null));
@@ -37,7 +36,6 @@ class SearchController extends AsyncNotifier<SearchState> {
         numberOfChildren: numberOfChildren,
         residency: residency,
         starRatings: starRatings,
-        currency: currency,
         offset: 0,
       );
 
@@ -56,7 +54,7 @@ class SearchController extends AsyncNotifier<SearchState> {
           numberOfChildren: numberOfChildren,
           residency: residency,
           starRatings: starRatings,
-          currency: currency,
+          currency: 'EUR', // Default since currency is now handled automatically
         ),
       );
     } catch (e) {
@@ -89,7 +87,6 @@ class SearchController extends AsyncNotifier<SearchState> {
         numberOfChildren: current.numberOfChildren,
         residency: current.residency,
         starRatings: current.starRatings,
-        currency: current.currency,
         offset: nextOffset,
       );
 

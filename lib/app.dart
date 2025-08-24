@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/routing/app_router.dart';
 import 'core/session/session_controller.dart';
+import 'core/config/currency_provider.dart';
 
 class TripNesterApp extends ConsumerWidget {
   const TripNesterApp({super.key});
@@ -11,6 +12,9 @@ class TripNesterApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Initialize session restoration on app startup
     final sessionInit = ref.watch(sessionInitProvider);
+
+    // Initialize currency provider early to avoid flickers
+    ref.read(currencyProvider);
 
     return sessionInit.when(
       loading: () => MaterialApp(

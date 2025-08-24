@@ -48,7 +48,6 @@ class _PropertyListingsScreenState
     final adults = args?.adults ?? 2;
     final children = args?.children ?? 0;
     final residency = args?.residency ?? 'US';
-    final currency = args?.currency ?? 'USD';
 
     ref
         .read(listingsControllerProvider.notifier)
@@ -60,7 +59,6 @@ class _PropertyListingsScreenState
           adults: adults,
           children: children,
           residency: residency,
-          currency: currency,
         );
   }
 

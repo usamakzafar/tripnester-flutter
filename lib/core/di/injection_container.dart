@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../session/session_controller.dart';
 import '../network/auth_interceptor.dart';
+import '../config/currency_provider.dart';
 import '../../data/datasources/remote/user_api.dart';
 import '../../data/datasources/remote/autocomplete_api.dart';
 import '../../data/repositories_impl/user_repository_impl.dart';
@@ -52,7 +53,10 @@ final autocompleteRepositoryProvider = Provider<AutocompleteRepository>(
 
 /// SearchRepository provider for property search operations.
 final searchRepositoryProvider = Provider<SearchRepository>(
-  (ref) => SearchRepositoryImpl(dio: ref.read(dioProvider)),
+  (ref) => SearchRepositoryImpl(
+    dio: ref.read(dioProvider),
+    ref: ref,
+  ),
 );
 
 /// GetAutocompleteSuggestions use case provider.
