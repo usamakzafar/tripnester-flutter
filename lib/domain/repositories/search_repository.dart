@@ -8,9 +8,9 @@ abstract class SearchRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
-    required String residency,
     List<int>? starRatings,
     int offset = 0,
     String? currencyOverride,
+    String? residencyOverride,
   });
 }

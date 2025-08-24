@@ -4,6 +4,7 @@ import 'core/theme/app_theme.dart';
 import 'core/routing/app_router.dart';
 import 'core/session/session_controller.dart';
 import 'core/config/currency_provider.dart';
+import 'core/config/residency_provider.dart';
 
 class TripNesterApp extends ConsumerWidget {
   const TripNesterApp({super.key});
@@ -15,6 +16,9 @@ class TripNesterApp extends ConsumerWidget {
 
     // Initialize currency provider early to avoid flickers
     ref.read(currencyProvider);
+
+    // Initialize residency provider early to avoid flickers
+    ref.read(residencyProvider);
 
     return sessionInit.when(
       loading: () => MaterialApp(

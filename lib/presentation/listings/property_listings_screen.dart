@@ -47,7 +47,6 @@ class _PropertyListingsScreenState
     final rooms = args?.rooms ?? 1;
     final adults = args?.adults ?? 2;
     final children = args?.children ?? 0;
-    final residency = args?.residency ?? 'US';
 
     ref
         .read(listingsControllerProvider.notifier)
@@ -58,7 +57,6 @@ class _PropertyListingsScreenState
           rooms: rooms,
           adults: adults,
           children: children,
-          residency: residency,
         );
   }
 

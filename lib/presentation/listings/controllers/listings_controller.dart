@@ -78,7 +78,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
   int _rooms = 1;
   int _adults = 2;
   int _children = 0;
-  String _residency = 'US';
 
   // Simple request token to ignore stale responses
   int _requestToken = 0;
@@ -96,16 +95,14 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     required int rooms,
     required int adults,
     required int children,
-    required String residency,
   }) async {
-    // Save params (currency is now handled automatically)
+    // Save params (currency and residency are now handled automatically)
     _regionId = regionId;
     _checkIn = checkIn;
     _checkOut = checkOut;
     _rooms = rooms;
     _adults = adults;
     _children = children;
-    _residency = residency;
 
     final token = ++_requestToken;
 
@@ -122,7 +119,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfRooms: rooms,
         numberOfAdults: adults,
         numberOfChildren: children,
-        residency: residency,
         starRatings: filters.starRating.isNotEmpty ? filters.starRating : null,
         offset: 0,
       );
@@ -170,7 +166,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfRooms: _rooms,
         numberOfAdults: _adults,
         numberOfChildren: _children,
-        residency: _residency,
         starRatings: s.filters.starRating.isEmpty ? null : s.filters.starRating,
         offset: next,
       );
@@ -214,7 +209,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         rooms: _rooms,
         adults: _adults,
         children: _children,
-        residency: _residency,
       );
     }
   }
@@ -238,7 +232,6 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         rooms: _rooms,
         adults: _adults,
         children: _children,
-        residency: _residency,
       );
     }
   }

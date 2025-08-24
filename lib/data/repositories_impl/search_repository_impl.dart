@@ -4,6 +4,7 @@ import '../../domain/repositories/search_repository.dart';
 import '../../domain/entities/search/search_response.dart';
 import '../../core/network/api_exceptions.dart';
 import '../../core/config/currency_provider.dart';
+import '../../core/config/residency_provider.dart';
 import '../models/search/search_request_dto.dart';
 import '../models/search/search_response_dto.dart';
 
@@ -24,15 +25,17 @@ class SearchRepositoryImpl implements SearchRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
-    required String residency,
     List<int>? starRatings,
     int offset = 0,
     String? currencyOverride,
+    String? residencyOverride,
   }) async {
     try {
-      // Get currency from centralized provider (synchronous)
+      // Get currency and residency from centralized providers (synchronous)
       final currencyCode = ref.read(currencyProvider.notifier).currentOrDefault.code;
+      final residencyCode = ref.read(residencyProvider.notifier).currentOrDefault.code;
       final curr = currencyOverride ?? currencyCode;
+      final residency = residencyOverride ?? residencyCode;
 
       // Create the request DTO (dates must be YYYY-MM-DD)
       final requestDto = SearchRequestDto(
