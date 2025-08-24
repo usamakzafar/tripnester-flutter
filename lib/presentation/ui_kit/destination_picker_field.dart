@@ -4,7 +4,9 @@ import '../search/search_screen.dart';
 
 class SelectedDestination {
   final String name;
-  const SelectedDestination(this.name);
+  final String? regionId;
+  final String? propertyId;
+  const SelectedDestination(this.name, {this.regionId, this.propertyId});
 }
 
 class DestinationPickerField extends StatelessWidget {
@@ -13,11 +15,13 @@ class DestinationPickerField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
+    this.onSelected,
   });
 
   final TextEditingController controller;
   final String label;
   final String hint;
+  final ValueChanged<SelectedDestination>? onSelected;
 
   Future<void> _openPicker(BuildContext context) async {
     // Present search screen from bottom as a modal sheet
@@ -42,6 +46,7 @@ class DestinationPickerField extends StatelessWidget {
 
     if (result != null) {
       controller.text = result.name;
+      onSelected?.call(result);
     }
   }
 
@@ -71,4 +76,3 @@ class DestinationPickerField extends StatelessWidget {
     );
   }
 }
-

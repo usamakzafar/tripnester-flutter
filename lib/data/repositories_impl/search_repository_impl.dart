@@ -26,10 +26,10 @@ class SearchRepositoryImpl implements SearchRepository {
     int offset = 0,
   }) async {
     try {
-      // Create the request DTO
+      // Create the request DTO (dates must be YYYY-MM-DD)
       final requestDto = SearchRequestDto(
-        checkInDate: checkInDate,
-        checkOutDate: checkOutDate,
+        checkInDate: _dateOnly(checkInDate),
+        checkOutDate: _dateOnly(checkOutDate),
         numberOfRooms: numberOfRooms,
         numberOfAdults: numberOfAdults,
         numberOfChildren: numberOfChildren,
@@ -75,6 +75,18 @@ class SearchRepositoryImpl implements SearchRepository {
       // Handle any other unexpected errors
       print('❌ [SearchRepository] Unexpected error: $e');
       throw ApiException('An unexpected error occurred: $e');
+    }
+  }
+
+  String _dateOnly(String value) {
+    try {
+      final d = DateTime.parse(value);
+      final mm = d.month.toString().padLeft(2, '0');
+      final dd = d.day.toString().padLeft(2, '0');
+      return '${d.year}-$mm-$dd';
+    } catch (_) {
+      // Fallback: trim to first 10 chars if it looks like an ISO string
+      return value.length >= 10 ? value.substring(0, 10) : value;
     }
   }
 

@@ -10,6 +10,7 @@ class HotelItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () {
         // Handle hotel card tap
@@ -22,9 +23,9 @@ class HotelItemCard extends StatelessWidget {
             width: 78,
             height: 78,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7.88),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(7.88), bottomLeft: Radius.circular(7.88)),
               image: DecorationImage(
-                image: AssetImage(hotel.image),
+                image: _imageProvider(hotel.image),
                 fit: BoxFit.cover,
               ),
             ),
@@ -47,11 +48,11 @@ class HotelItemCard extends StatelessWidget {
                         children: [
                           Text(
                             hotel.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Jost',
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
-                              color: Color(0xFF171725),
+                              color: scheme.primary,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -107,11 +108,11 @@ class HotelItemCard extends StatelessWidget {
                 // Price
                 Text(
                   hotel.price,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
-                    color: Color(0xFF171725),
+                    color: scheme.primary,
                   ),
                 ),
               ],
@@ -120,6 +121,13 @@ class HotelItemCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  ImageProvider _imageProvider(String path) {
+    if (path.startsWith('http')) {
+      return NetworkImage(path);
+    }
+    return AssetImage(path);
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../controllers/home_search_controller.dart';
 import '../../ui_kit/destination_picker_field.dart';
+import '../../listings/listing_search_args.dart';
 
 class SearchCard extends ConsumerStatefulWidget {
   const SearchCard({super.key});
@@ -14,11 +15,7 @@ class SearchCard extends ConsumerStatefulWidget {
 
 class _SearchCardState extends ConsumerState<SearchCard> {
   final _locationController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  SelectedDestination? _selectedDestination;
 
   @override
   void dispose() {
@@ -51,6 +48,11 @@ class _SearchCardState extends ConsumerState<SearchCard> {
           controller: _locationController,
           label: 'Destination',
           hint: 'Search destinations, hotels...',
+          onSelected: (sel) {
+            setState(() => _selectedDestination = sel);
+            // Optionally sync with controller state without triggering autocomplete
+            ref.read(homeSearchControllerProvider.notifier).setLocationTextWithoutAutocomplete(sel.name);
+          },
         ),
         const SizedBox(height: 16),
 
@@ -127,8 +129,7 @@ class _SearchCardState extends ConsumerState<SearchCard> {
           width: double.infinity,
           child: FilledButton.icon(
             onPressed: () {
-              ref.read(homeSearchControllerProvider.notifier).submit();
-              context.go('/search'); // Navigate to search screen
+              _onSubmit(context, state);
             },
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -148,6 +149,40 @@ class _SearchCardState extends ConsumerState<SearchCard> {
           ),
         ),
       ],
+    );
+  }
+
+  void _onSubmit(BuildContext context, HomeSearchState state) {
+    final dest = _selectedDestination;
+    final range = state.stayRange;
+
+    if (dest == null || (dest.regionId == null || dest.regionId!.isEmpty)) {
+      _showSnack(context, 'Please pick a destination');
+      return;
+    }
+    if (range == null) {
+      _showSnack(context, 'Please select your stay dates');
+      return;
+    }
+
+    final args = ListingSearchArgs(
+      regionId: dest.regionId!,
+      propertyId: dest.propertyId,
+      locationName: dest.name,
+      stayRange: range,
+      rooms: 1,
+      adults: state.adults,
+      children: state.children,
+      residency: 'US',
+      currency: 'USD',
+    );
+
+    context.push('/listings', extra: args);
+  }
+
+  void _showSnack(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg)),
     );
   }
 

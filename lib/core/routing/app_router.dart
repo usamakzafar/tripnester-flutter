@@ -6,6 +6,8 @@ import '../../presentation/auth/register_screen.dart';
 import '../../presentation/home/home_screen.dart';
 import '../../presentation/search/search_screen.dart';
 import '../session/session_controller.dart';
+import '../../presentation/listings/property_listings_screen.dart';
+import '../../presentation/listings/listing_search_args.dart';
 
 /// Splash screen shown during session restoration
 class SplashScreen extends StatelessWidget {
@@ -98,6 +100,23 @@ GoRouter createAppRouter(WidgetRef ref) {
       GoRoute(
         path: '/search',
         builder: (_, __) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/listings',
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is ListingSearchArgs) {
+            return PropertyListingsScreen(
+              regionId: extra.regionId,
+              propertyId: extra.propertyId,
+              args: extra,
+            );
+          }
+          // Fallback if args missing
+          return const Scaffold(
+            body: Center(child: Text('Missing search parameters')),
+          );
+        },
       ),
     ],
   );

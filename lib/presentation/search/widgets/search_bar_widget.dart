@@ -26,6 +26,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFFE9EBED)),
         borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
       ),
       child: Row(
         children: [
@@ -44,8 +45,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   Expanded(
                     child: TextField(
                       controller: _searchController,
-                      onChanged: widget.onChanged,
                       focusNode: widget.focusNode,
+                      onChanged: widget.onChanged,
                       decoration: const InputDecoration(
                         hintText: 'Search...',
                         hintStyle: TextStyle(

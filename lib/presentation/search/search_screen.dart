@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../autocomplete/autocomplete_providers.dart';
 import 'widgets/search_header.dart';
 import 'widgets/search_bar_widget.dart';
@@ -158,7 +157,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.of(context).pop(SelectedDestination(title));
+                if (isRegion) {
+                  final r = regions[index];
+                  Navigator.of(context).pop(SelectedDestination(r.name, regionId: r.regionId));
+                } else {
+                  final p = props[index - regions.length];
+                  Navigator.of(context).pop(
+                    SelectedDestination(p.name, regionId: p.regionId, propertyId: p.hid.toString()),
+                  );
+                }
               },
             );
           },
