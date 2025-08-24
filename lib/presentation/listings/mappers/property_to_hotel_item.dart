@@ -13,9 +13,10 @@ HotelItem mapProperty(RegionalProperty p) {
       : ImageUtil.buildUrl(raw, CdnImageSize.thumb240);
 
   return HotelItem(
+    id: p.id, // Added property ID
     name: p.name,
-    location: p.address, // Domain doesn’t expose city/country; show address
-    price: '${p.currency} ${p.minPricePerNight.toStringAsFixed(0)}/night',
+    location: p.address, // Domain doesn't expose city/country; show address
+    price: '${p.currency} ${p.minPricePerNight.toStringAsFixed(0)}/night', // TODO handle price formatting globally, don't hardcode here
     rating: p.starRating.isNotEmpty ? p.starRating : '-',
     image: imageUrl,
   );

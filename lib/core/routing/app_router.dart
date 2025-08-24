@@ -8,6 +8,8 @@ import '../../presentation/search/search_screen.dart';
 import '../session/session_controller.dart';
 import '../../presentation/listings/property_listings_screen.dart';
 import '../../presentation/listings/listing_search_args.dart';
+import '../../presentation/property_details/property_details_screen.dart';
+import '../../presentation/property_details/property_details_args.dart';
 
 /// Splash screen shown during session restoration
 class SplashScreen extends StatelessWidget {
@@ -115,6 +117,28 @@ GoRouter createAppRouter(WidgetRef ref) {
           // Fallback if args missing
           return const Scaffold(
             body: Center(child: Text('Missing search parameters')),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/property-details',
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is PropertyDetailsArgs) {
+            return PropertyDetailsScreen(
+              propertyId: extra.propertyId,
+              checkInDate: extra.checkInDate,
+              checkOutDate: extra.checkOutDate,
+              numberOfRooms: extra.numberOfRooms,
+              numberOfAdults: extra.numberOfAdults,
+              numberOfChildren: extra.numberOfChildren,
+              children: extra.children,
+              hotel: extra.hotel, // Added missing hotel parameter
+            );
+          }
+          // Fallback if args missing
+          return const Scaffold(
+            body: Center(child: Text('Missing property details parameters')),
           );
         },
       ),

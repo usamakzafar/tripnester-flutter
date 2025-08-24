@@ -1,16 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../property_details/property_details_args.dart';
 
 class HotelItemCard extends StatelessWidget {
   final HotelItem hotel;
+  final DateTime? checkInDate;
+  final DateTime? checkOutDate;
+  final int? numberOfRooms;
+  final int? numberOfAdults;
+  final int? numberOfChildren;
+  final List<int>? children; // ages (0 for <1)
 
-  const HotelItemCard({super.key, required this.hotel});
+  const HotelItemCard({
+    super.key,
+    required this.hotel,
+    this.checkInDate,
+    this.checkOutDate,
+    this.numberOfRooms,
+    this.numberOfAdults,
+    this.numberOfChildren,
+    this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () {
-        // Handle hotel card tap
+        // Navigate to property details if search parameters are available
+        if (checkInDate != null && checkOutDate != null) {
+          final args = PropertyDetailsArgs(
+            propertyId: hotel.id,
+            checkInDate: checkInDate!,
+            checkOutDate: checkOutDate!,
+            numberOfRooms: numberOfRooms ?? 1,
+            numberOfAdults: numberOfAdults ?? 2,
+            numberOfChildren: numberOfChildren ?? 0,
+            children: children,
+            hotel: hotel, // Pass the entire hotel object
+          );
+          context.push('/property-details', extra: args);
+        }
       },
       borderRadius: BorderRadius.circular(8),
       child: SizedBox(
@@ -150,6 +180,7 @@ class HotelItemCard extends StatelessWidget {
 }
 
 class HotelItem {
+  final String id; // Added property ID
   final String name;
   final String location;
   final String price;
@@ -157,6 +188,7 @@ class HotelItem {
   final String image;
 
   const HotelItem({
+    required this.id,
     required this.name,
     required this.location,
     required this.price,

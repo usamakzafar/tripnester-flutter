@@ -207,7 +207,15 @@ class _PropertyListingsScreenState
                     final hotel = items[index - 1];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: HotelItemCard(hotel: hotel),
+                      child: HotelItemCard(
+                        hotel: hotel,
+                        checkInDate: widget.args?.stayRange.start,
+                        checkOutDate: widget.args?.stayRange.end,
+                        numberOfRooms: widget.args?.rooms,
+                        numberOfAdults: widget.args?.adults,
+                        numberOfChildren: widget.args?.children,
+                        children: widget.args?.childrenAges,
+                      ),
                     );
                   },
                 );

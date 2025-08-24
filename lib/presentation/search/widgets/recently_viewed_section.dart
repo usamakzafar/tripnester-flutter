@@ -6,6 +6,7 @@ class RecentlyViewedSection extends StatelessWidget {
 
   final List<HotelItem> _recentlyViewed = const [
     HotelItem(
+      id: 'hotel_mystic_palms',
       name: 'Mystic Palms',
       location: 'Palm Springs, CA',
       price: '\$230 /night',
@@ -13,6 +14,7 @@ class RecentlyViewedSection extends StatelessWidget {
       image: 'assets/images/sample/hotel/hotel_mystic_palms.png',
     ),
     HotelItem(
+      id: 'hotel_sapphire_cove',
       name: 'Sapphire Cove Hotel',
       location: 'Key West, FL',
       price: '\$290 /night',
@@ -20,6 +22,7 @@ class RecentlyViewedSection extends StatelessWidget {
       image: 'assets/images/sample/hotel/hotel_sapphire_cove.png',
     ),
     HotelItem(
+      id: "hotel_elysian_suites",
       name: 'Elysian Suites',
       location: 'San Diego, CA',
       price: '\$320 /night',
@@ -27,6 +30,7 @@ class RecentlyViewedSection extends StatelessWidget {
       image: 'assets/images/sample/hotel/hotel_elysian_suites.png',
     ),
     HotelItem(
+      id: 'hotel_serenity_sands',
       name: 'Serenity sands',
       location: 'San Diego, CA',
       price: '\$320 /night',
