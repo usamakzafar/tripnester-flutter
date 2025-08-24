@@ -30,25 +30,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // title: Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     // const SizedBox(height: 24),
-        //     Image.asset('assets/images/logos/logo-white-padded.png',
-        //       height: 64,
-        //       errorBuilder: (context, error, stackTrace) => Icon(
-        //         Icons.hotel,
-        //         size: 48,
-        //         color: colorScheme.onPrimary,
-        //       ),
-        //     )
-        //   ]
-        // ),
         centerTitle: true,
         automaticallyImplyLeading: false, // Remove back button on home screen
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white, // Ensure text is white for contrast
+        foregroundColor: Colors.transparent, // Ensure text is white for contrast
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light, // Light icons for dark gradient
@@ -66,25 +52,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               filterQuality: FilterQuality.low, // perf
             ),
           ),
-          // 2) Top-to-bottom gradient overlay for readability
-          // Positioned.fill(
-          //   child: IgnorePointer(
-          //     child: DecoratedBox(
-          //       decoration: BoxDecoration(
-          //         gradient: LinearGradient(
-          //           begin: Alignment.topCenter,
-          //           end: Alignment.bottomCenter,
-          //           colors: [
-          //             Colors.black.withOpacity(0.35), // darken top for AppBar/title
-          //             Colors.black.withOpacity(0.10),
-          //             Colors.black.withOpacity(0.05),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // 3) Foreground scrollable content
           const SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(16, 16 + 56 /* visual spacing below appbar */, 16, 16),
