@@ -34,7 +34,6 @@ class SearchController extends AsyncNotifier<SearchState> {
         numberOfRooms: numberOfRooms,
         numberOfAdults: numberOfAdults,
         numberOfChildren: numberOfChildren,
-        residency: residency,
         starRatings: starRatings,
         offset: 0,
       );
@@ -85,7 +84,6 @@ class SearchController extends AsyncNotifier<SearchState> {
         numberOfRooms: current.numberOfRooms,
         numberOfAdults: current.numberOfAdults,
         numberOfChildren: current.numberOfChildren,
-        residency: current.residency,
         starRatings: current.starRatings,
         offset: nextOffset,
       );

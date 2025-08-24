@@ -78,6 +78,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
   int _rooms = 1;
   int _adults = 2;
   int _children = 0;
+  List<int>? _childrenAges;
 
   // Simple request token to ignore stale responses
   int _requestToken = 0;
@@ -95,6 +96,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     required int rooms,
     required int adults,
     required int children,
+    List<int>? childrenAges,
   }) async {
     // Save params (currency and residency are now handled automatically)
     _regionId = regionId;
@@ -103,6 +105,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
     _rooms = rooms;
     _adults = adults;
     _children = children;
+    _childrenAges = childrenAges;
 
     final token = ++_requestToken;
 
@@ -121,6 +124,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfChildren: children,
         starRatings: filters.starRating.isNotEmpty ? filters.starRating : null,
         offset: 0,
+        children: childrenAges,
       );
 
       // Ignore stale responses
@@ -168,6 +172,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         numberOfChildren: _children,
         starRatings: s.filters.starRating.isEmpty ? null : s.filters.starRating,
         offset: next,
+        children: _childrenAges,
       );
 
       var combined = [...s.items, ...res.properties];
@@ -209,6 +214,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         rooms: _rooms,
         adults: _adults,
         children: _children,
+        childrenAges: _childrenAges,
       );
     }
   }
@@ -232,6 +238,7 @@ class ListingsController extends AsyncNotifier<ListingsState> {
         rooms: _rooms,
         adults: _adults,
         children: _children,
+        childrenAges: _childrenAges,
       );
     }
   }

@@ -12,5 +12,6 @@ abstract class SearchRepository {
     int offset = 0,
     String? currencyOverride,
     String? residencyOverride,
+    List<int>? children, // ages (0 for <1)
   });
 }

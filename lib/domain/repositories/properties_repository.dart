@@ -9,6 +9,7 @@ abstract class PropertiesRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
+    List<int>? children, // ages (0 for <1)
   });
 
   Future<PropertyRooms> getPropertyRooms({
@@ -18,5 +19,6 @@ abstract class PropertiesRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
+    List<int>? children, // ages (0 for <1)
   });
 }

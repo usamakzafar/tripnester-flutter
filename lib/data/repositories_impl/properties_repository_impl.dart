@@ -25,6 +25,7 @@ class PropertiesRepositoryImpl implements PropertiesRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
+    List<int>? children,
   }) async {
     try {
       // Get currency and residency from centralized providers
@@ -39,6 +40,7 @@ class PropertiesRepositoryImpl implements PropertiesRepository {
         numberOfChildren: numberOfChildren,
         residency: residencyCode,
         currency: currencyCode,
+        children: children,
       );
 
       final responseDto = await _api.fetchPropertyDetails(
@@ -61,6 +63,7 @@ class PropertiesRepositoryImpl implements PropertiesRepository {
     required int numberOfRooms,
     required int numberOfAdults,
     required int numberOfChildren,
+    List<int>? children,
   }) async {
     try {
       // Get currency and residency from centralized providers
@@ -75,6 +78,7 @@ class PropertiesRepositoryImpl implements PropertiesRepository {
         numberOfChildren: numberOfChildren,
         residency: residencyCode,
         currency: currencyCode,
+        children: children,
       );
 
       final responseDto = await _api.fetchPropertyRooms(

@@ -165,6 +165,20 @@ class _SearchCardState extends ConsumerState<SearchCard> {
       return;
     }
 
+    // Validate children ages if needed
+    if (state.children > 0) {
+      final ages = state.childrenAges;
+      final hasMissing = ages.length < state.children || ages.take(state.children).any((a) => a < 0);
+      if (hasMissing) {
+        _showSnack(context, 'Please select all children ages');
+        return;
+      }
+    }
+
+    final childrenAges = state.children > 0
+        ? state.childrenAges.take(state.children).toList()
+        : null;
+
     final args = ListingSearchArgs(
       regionId: dest.regionId!,
       propertyId: dest.propertyId,
@@ -175,6 +189,7 @@ class _SearchCardState extends ConsumerState<SearchCard> {
       children: state.children,
       residency: 'US',
       currency: 'USD',
+      childrenAges: childrenAges,
     );
 
     context.push('/listings', extra: args);
@@ -215,9 +230,15 @@ class _SearchCardState extends ConsumerState<SearchCard> {
       builder: (context) => _GuestSelector(
         initialAdults: state.adults,
         initialChildren: state.children,
+        initialChildrenAges: state.children > 0
+            ? state.childrenAges.take(state.children).toList()
+            : const [],
         onChanged: (adults, children) {
           ref.read(homeSearchControllerProvider.notifier).setAdults(adults);
           ref.read(homeSearchControllerProvider.notifier).setChildren(children);
+        },
+        onAgesSelected: (ages) {
+          ref.read(homeSearchControllerProvider.notifier).setChildrenAges(ages);
         },
       ),
     );
@@ -249,11 +270,15 @@ class _GuestSelector extends StatefulWidget {
   final int initialAdults;
   final int initialChildren;
   final Function(int adults, int children) onChanged;
+  final List<int>? initialChildrenAges;
+  final void Function(List<int> ages)? onAgesSelected;
 
   const _GuestSelector({
     required this.initialAdults,
     required this.initialChildren,
     required this.onChanged,
+    this.initialChildrenAges,
+    this.onAgesSelected,
   });
 
   @override
@@ -263,12 +288,29 @@ class _GuestSelector extends StatefulWidget {
 class _GuestSelectorState extends State<_GuestSelector> {
   late int adults;
   late int children;
+  late List<int?> _childrenAges; // null = not selected yet; 0..17 values
 
   @override
   void initState() {
     super.initState();
     adults = widget.initialAdults;
     children = widget.initialChildren;
+    final init = widget.initialChildrenAges ?? const [];
+    _childrenAges = List<int?>.from(init.map((e) => e >= 0 ? e : null));
+    // ensure length matches children
+    if (_childrenAges.length < children) {
+      _childrenAges.addAll(List<int?>.filled(children - _childrenAges.length, null));
+    } else if (_childrenAges.length > children) {
+      _childrenAges.removeRange(children, _childrenAges.length);
+    }
+  }
+
+  void _syncAgesLength() {
+    if (_childrenAges.length < children) {
+      _childrenAges.addAll(List<int?>.filled(children - _childrenAges.length, null));
+    } else if (_childrenAges.length > children) {
+      _childrenAges.removeRange(children, _childrenAges.length);
+    }
   }
 
   @override
@@ -278,65 +320,104 @@ class _GuestSelectorState extends State<_GuestSelector> {
 
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Guests',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Adults
-          _buildGuestRow(
-            'Adults',
-            adults,
-            () => setState(() {
-              if (adults > 1) {
-                adults--;
-                widget.onChanged(adults, children);
-              }
-            }),
-            () => setState(() {
-              adults++;
-              widget.onChanged(adults, children);
-            }),
-          ),
-          const SizedBox(height: 16),
-
-          // Children
-          _buildGuestRow(
-            'Children',
-            children,
-            () => setState(() {
-              if (children > 0) {
-                children--;
-                widget.onChanged(adults, children);
-              }
-            }),
-            () => setState(() {
-              children++;
-              widget.onChanged(adults, children);
-            }),
-          ),
-          const SizedBox(height: 24),
-
-          // Done Button
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: FilledButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Guests',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
-              child: const Text('Done'),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+
+            // Adults
+            _buildGuestRow(
+              'Adults',
+              adults,
+              () => setState(() {
+                if (adults > 1) {
+                  adults--;
+                  widget.onChanged(adults, children);
+                }
+              }),
+              () => setState(() {
+                adults++;
+                widget.onChanged(adults, children);
+              }),
+            ),
+            const SizedBox(height: 16),
+
+            // Children
+            _buildGuestRow(
+              'Children',
+              children,
+              () => setState(() {
+                if (children > 0) {
+                  children--;
+                  _syncAgesLength();
+                  widget.onChanged(adults, children);
+                }
+              }),
+              () => setState(() {
+                children++;
+                _syncAgesLength();
+                widget.onChanged(adults, children);
+              }),
+            ),
+
+            if (children > 0) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Children ages',
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              _ChildrenAgesList(
+                count: children,
+                initialAges: _childrenAges,
+                onChanged: (index, age) {
+                  setState(() {
+                    _childrenAges[index] = age;
+                  });
+                },
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
+            // Done Button
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  // Validate children ages if any children
+                  if (children > 0) {
+                    final missing = _childrenAges.take(children).any((e) => e == null);
+                    if (missing) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select all children ages')),
+                      );
+                      return;
+                    }
+                  }
+                  // Emit ages if requested
+                  if (widget.onAgesSelected != null) {
+                    widget.onAgesSelected!(_childrenAges.take(children).map((e) => e ?? 0).toList());
+                  }
+                  Navigator.of(context).pop();
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('Done'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -379,6 +460,55 @@ class _GuestSelectorState extends State<_GuestSelector> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _ChildrenAgesList extends StatelessWidget {
+  final int count;
+  final List<int?> initialAges;
+  final void Function(int index, int age) onChanged;
+
+  const _ChildrenAgesList({
+    required this.count,
+    required this.initialAges,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final items = List<DropdownMenuItem<int>>.generate(
+      18,
+      (i) => DropdownMenuItem<int>(
+        value: i,
+        child: Text(
+          i == 0 ? '<1 year old' : (i == 1 ? '1 year' : '$i years'),
+          style: theme.textTheme.bodyMedium,
+        ),
+      ),
+    );
+
+    return Column(
+      children: List.generate(count, (index) {
+        final value = index < initialAges.length ? initialAges[index] : null;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: DropdownButtonFormField<int>(
+            value: value,
+            items: items,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Child age',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
+            onChanged: (v) {
+              if (v != null) onChanged(index, v);
+            },
+          ),
+        );
+      }),
     );
   }
 }

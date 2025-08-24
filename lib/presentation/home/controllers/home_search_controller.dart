@@ -25,6 +25,7 @@ class HomeSearchState with _$HomeSearchState {
     DateTimeRange? stayRange,
     @Default(2) int adults,
     @Default(0) int children,
+    @Default(<int>[]) List<int> childrenAges,
     @Default(false) bool isAutocompleteOpen,
     @Default([]) List<AutocompleteSuggestion> suggestions,
   }) = _HomeSearchState;
@@ -130,7 +131,34 @@ class HomeSearchController extends _$HomeSearchController {
   void setChildren(int children) {
     if (children < 0) return; // Minimum 0 children
     final currentState = state.valueOrNull ?? const HomeSearchState();
-    state = AsyncValue.data(currentState.copyWith(children: children));
+    // adjust ages list to match count, fill with -1 as not-selected
+    final ages = List<int>.from(currentState.childrenAges);
+    if (children < ages.length) {
+      ages.removeRange(children, ages.length);
+    } else if (children > ages.length) {
+      ages.addAll(List<int>.filled(children - ages.length, -1));
+    }
+    state = AsyncValue.data(currentState.copyWith(children: children, childrenAges: ages));
+  }
+
+  void setChildrenAges(List<int> ages) {
+    final currentState = state.valueOrNull ?? const HomeSearchState();
+    state = AsyncValue.data(currentState.copyWith(childrenAges: List<int>.from(ages)));
+  }
+
+  void setChildAgeAt(int index, int age) {
+    final currentState = state.valueOrNull ?? const HomeSearchState();
+    final ages = List<int>.from(currentState.childrenAges);
+    if (index < 0) return;
+    if (index >= ages.length) {
+      // expand list up to index
+      while (ages.length <= index) {
+        ages.add(age);
+      }
+    } else {
+      ages[index] = age;
+    }
+    state = AsyncValue.data(currentState.copyWith(childrenAges: ages));
   }
 
   void submit() {

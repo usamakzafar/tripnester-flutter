@@ -11,6 +11,7 @@ class PropertyRequestDto {
   final int numberOfChildren;
   final String residency;       // from residencyProvider
   final String currency;        // from currencyProvider
+  final List<int>? children;    // ages: 0 for <1, 1..17
 
   const PropertyRequestDto({
     required this.checkInDate,
@@ -20,6 +21,7 @@ class PropertyRequestDto {
     required this.numberOfChildren,
     required this.residency,
     required this.currency,
+    this.children,
   });
 
   factory PropertyRequestDto.fromJson(Map<String, dynamic> json) =>

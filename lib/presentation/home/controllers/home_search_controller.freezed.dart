@@ -374,6 +374,7 @@ mixin _$HomeSearchState {
   DateTimeRange<DateTime>? get stayRange => throw _privateConstructorUsedError;
   int get adults => throw _privateConstructorUsedError;
   int get children => throw _privateConstructorUsedError;
+  List<int> get childrenAges => throw _privateConstructorUsedError;
   bool get isAutocompleteOpen => throw _privateConstructorUsedError;
   List<AutocompleteSuggestion> get suggestions =>
       throw _privateConstructorUsedError;
@@ -397,6 +398,7 @@ abstract class $HomeSearchStateCopyWith<$Res> {
     DateTimeRange<DateTime>? stayRange,
     int adults,
     int children,
+    List<int> childrenAges,
     bool isAutocompleteOpen,
     List<AutocompleteSuggestion> suggestions,
   });
@@ -421,6 +423,7 @@ class _$HomeSearchStateCopyWithImpl<$Res, $Val extends HomeSearchState>
     Object? stayRange = freezed,
     Object? adults = null,
     Object? children = null,
+    Object? childrenAges = null,
     Object? isAutocompleteOpen = null,
     Object? suggestions = null,
   }) {
@@ -446,6 +449,11 @@ class _$HomeSearchStateCopyWithImpl<$Res, $Val extends HomeSearchState>
                     ? _value.children
                     : children // ignore: cast_nullable_to_non_nullable
                         as int,
+            childrenAges:
+                null == childrenAges
+                    ? _value.childrenAges
+                    : childrenAges // ignore: cast_nullable_to_non_nullable
+                        as List<int>,
             isAutocompleteOpen:
                 null == isAutocompleteOpen
                     ? _value.isAutocompleteOpen
@@ -476,6 +484,7 @@ abstract class _$$HomeSearchStateImplCopyWith<$Res>
     DateTimeRange<DateTime>? stayRange,
     int adults,
     int children,
+    List<int> childrenAges,
     bool isAutocompleteOpen,
     List<AutocompleteSuggestion> suggestions,
   });
@@ -499,6 +508,7 @@ class __$$HomeSearchStateImplCopyWithImpl<$Res>
     Object? stayRange = freezed,
     Object? adults = null,
     Object? children = null,
+    Object? childrenAges = null,
     Object? isAutocompleteOpen = null,
     Object? suggestions = null,
   }) {
@@ -524,6 +534,11 @@ class __$$HomeSearchStateImplCopyWithImpl<$Res>
                 ? _value.children
                 : children // ignore: cast_nullable_to_non_nullable
                     as int,
+        childrenAges:
+            null == childrenAges
+                ? _value._childrenAges
+                : childrenAges // ignore: cast_nullable_to_non_nullable
+                    as List<int>,
         isAutocompleteOpen:
             null == isAutocompleteOpen
                 ? _value.isAutocompleteOpen
@@ -547,9 +562,11 @@ class _$HomeSearchStateImpl implements _HomeSearchState {
     this.stayRange,
     this.adults = 2,
     this.children = 0,
+    final List<int> childrenAges = const <int>[],
     this.isAutocompleteOpen = false,
     final List<AutocompleteSuggestion> suggestions = const [],
-  }) : _suggestions = suggestions;
+  }) : _childrenAges = childrenAges,
+       _suggestions = suggestions;
 
   @override
   @JsonKey()
@@ -562,6 +579,15 @@ class _$HomeSearchStateImpl implements _HomeSearchState {
   @override
   @JsonKey()
   final int children;
+  final List<int> _childrenAges;
+  @override
+  @JsonKey()
+  List<int> get childrenAges {
+    if (_childrenAges is EqualUnmodifiableListView) return _childrenAges;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_childrenAges);
+  }
+
   @override
   @JsonKey()
   final bool isAutocompleteOpen;
@@ -576,7 +602,7 @@ class _$HomeSearchStateImpl implements _HomeSearchState {
 
   @override
   String toString() {
-    return 'HomeSearchState(locationText: $locationText, stayRange: $stayRange, adults: $adults, children: $children, isAutocompleteOpen: $isAutocompleteOpen, suggestions: $suggestions)';
+    return 'HomeSearchState(locationText: $locationText, stayRange: $stayRange, adults: $adults, children: $children, childrenAges: $childrenAges, isAutocompleteOpen: $isAutocompleteOpen, suggestions: $suggestions)';
   }
 
   @override
@@ -591,6 +617,10 @@ class _$HomeSearchStateImpl implements _HomeSearchState {
             (identical(other.adults, adults) || other.adults == adults) &&
             (identical(other.children, children) ||
                 other.children == children) &&
+            const DeepCollectionEquality().equals(
+              other._childrenAges,
+              _childrenAges,
+            ) &&
             (identical(other.isAutocompleteOpen, isAutocompleteOpen) ||
                 other.isAutocompleteOpen == isAutocompleteOpen) &&
             const DeepCollectionEquality().equals(
@@ -606,6 +636,7 @@ class _$HomeSearchStateImpl implements _HomeSearchState {
     stayRange,
     adults,
     children,
+    const DeepCollectionEquality().hash(_childrenAges),
     isAutocompleteOpen,
     const DeepCollectionEquality().hash(_suggestions),
   );
@@ -628,6 +659,7 @@ abstract class _HomeSearchState implements HomeSearchState {
     final DateTimeRange<DateTime>? stayRange,
     final int adults,
     final int children,
+    final List<int> childrenAges,
     final bool isAutocompleteOpen,
     final List<AutocompleteSuggestion> suggestions,
   }) = _$HomeSearchStateImpl;
@@ -640,6 +672,8 @@ abstract class _HomeSearchState implements HomeSearchState {
   int get adults;
   @override
   int get children;
+  @override
+  List<int> get childrenAges;
   @override
   bool get isAutocompleteOpen;
   @override

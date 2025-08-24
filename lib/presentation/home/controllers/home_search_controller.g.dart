@@ -7,7 +7,7 @@ part of 'home_search_controller.dart';
 // **************************************************************************
 
 String _$homeSearchControllerHash() =>
-    r'dbdeaf14ae0d19871e6c90acd76c27a2f2a27332';
+    r'9ae74a8365406b843c44b247440f8238bf668a12';
 
 /// See also [HomeSearchController].
 @ProviderFor(HomeSearchController)

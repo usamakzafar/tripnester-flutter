@@ -47,6 +47,7 @@ class _PropertyListingsScreenState
     final rooms = args?.rooms ?? 1;
     final adults = args?.adults ?? 2;
     final children = args?.children ?? 0;
+    final childrenAges = args?.childrenAges;
 
     ref
         .read(listingsControllerProvider.notifier)
@@ -57,6 +58,7 @@ class _PropertyListingsScreenState
           rooms: rooms,
           adults: adults,
           children: children,
+          childrenAges: childrenAges,
         );
   }
 

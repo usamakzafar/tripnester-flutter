@@ -33,6 +33,10 @@ SearchRequestDto _$SearchRequestDtoFromJson(Map<String, dynamic> json) =>
               ),
       currency: json['currency'] as String,
       offset: (json['offset'] as num?)?.toInt() ?? 0,
+      children:
+          (json['children'] as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList(),
     );
 
 Map<String, dynamic> _$SearchRequestDtoToJson(SearchRequestDto instance) =>
@@ -46,4 +50,5 @@ Map<String, dynamic> _$SearchRequestDtoToJson(SearchRequestDto instance) =>
       'filters': instance.filters,
       'currency': instance.currency,
       'offset': instance.offset,
+      'children': instance.children,
     };

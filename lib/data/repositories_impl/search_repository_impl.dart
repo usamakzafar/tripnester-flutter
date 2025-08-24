@@ -29,6 +29,7 @@ class SearchRepositoryImpl implements SearchRepository {
     int offset = 0,
     String? currencyOverride,
     String? residencyOverride,
+    List<int>? children,
   }) async {
     try {
       // Get currency and residency from centralized providers (synchronous)
@@ -50,6 +51,7 @@ class SearchRepositoryImpl implements SearchRepository {
             : null,
         currency: curr,
         offset: offset,
+        children: children,
       );
 
       final endpoint = '/api/regions/$regionId/properties';

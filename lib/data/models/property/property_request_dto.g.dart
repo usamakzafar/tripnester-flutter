@@ -15,6 +15,10 @@ PropertyRequestDto _$PropertyRequestDtoFromJson(Map<String, dynamic> json) =>
       numberOfChildren: (json['numberOfChildren'] as num).toInt(),
       residency: json['residency'] as String,
       currency: json['currency'] as String,
+      children:
+          (json['children'] as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList(),
     );
 
 Map<String, dynamic> _$PropertyRequestDtoToJson(PropertyRequestDto instance) =>
@@ -26,4 +30,5 @@ Map<String, dynamic> _$PropertyRequestDtoToJson(PropertyRequestDto instance) =>
       'numberOfChildren': instance.numberOfChildren,
       'residency': instance.residency,
       'currency': instance.currency,
+      'children': instance.children,
     };

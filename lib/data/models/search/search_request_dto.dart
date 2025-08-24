@@ -46,6 +46,9 @@ class SearchRequestDto {
   @JsonKey(name: 'offset')
   final int offset;
 
+  @JsonKey(name: 'children')
+  final List<int>? children; // ages: 0 for <1, 1..17
+
   const SearchRequestDto({
     required this.checkInDate,
     required this.checkOutDate,
@@ -56,6 +59,7 @@ class SearchRequestDto {
     this.filters,
     required this.currency,
     this.offset = 0,
+    this.children,
   });
 
   factory SearchRequestDto.fromJson(Map<String, dynamic> json) =>
