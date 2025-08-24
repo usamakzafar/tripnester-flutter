@@ -6,15 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../session/session_controller.dart';
 import '../network/auth_interceptor.dart';
-import '../config/currency_provider.dart';
 import '../../data/datasources/remote/user_api.dart';
 import '../../data/datasources/remote/autocomplete_api.dart';
+import '../../data/datasources/remote/properties_api.dart';
 import '../../data/repositories_impl/user_repository_impl.dart';
 import '../../data/repositories_impl/autocomplete_repository_impl.dart';
 import '../../data/repositories_impl/search_repository_impl.dart';
+import '../../data/repositories_impl/properties_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/autocomplete_repository.dart';
 import '../../domain/repositories/search_repository.dart';
+import '../../domain/repositories/properties_repository.dart';
 import '../../domain/usecases/authenticate_user.dart';
 import '../../domain/usecases/register_user.dart';
 import '../../domain/usecases/get_autocomplete_suggestions.dart';
@@ -59,6 +61,21 @@ final searchRepositoryProvider = Provider<SearchRepository>(
   ),
 );
 
+/// PropertiesApi provider for property-related operations.
+final propertiesApiProvider = Provider<PropertiesApi>((ref) {
+  final dio = ref.read(dioProvider);
+  return PropertiesApi(dio);
+});
+
+/// PropertiesRepository provider for property operations.
+final propertiesRepositoryProvider = Provider<PropertiesRepository>((ref) {
+  final api = ref.read(propertiesApiProvider);
+  return PropertiesRepositoryImpl(
+    api: api,
+    ref: ref, // pass ref to read currency/residency
+  );
+});
+
 /// GetAutocompleteSuggestions use case provider.
 final getAutocompleteSuggestionsProvider = Provider<GetAutocompleteSuggestions>(
   (ref) => GetAutocompleteSuggestions(ref.read(autocompleteRepositoryProvider)),
@@ -82,7 +99,7 @@ final registerUserProvider = Provider<RegisterUser>(
   (ref) => RegisterUser(ref.read(userRepositoryProvider)),
 );
 
-/// TODO(di): Add providers for APIs (PropertiesApi, BookingApi),
+/// TODO(di): Add providers for APIs (BookingApi),
 /// repositories, and usecases as they are created.
 /// Use only Riverpod providers; do not add service locators.
 
