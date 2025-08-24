@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatefulWidget {
-  const SearchBarWidget({super.key, this.onChanged, this.focusNode});
+  const SearchBarWidget({super.key, this.onChanged, this.focusNode, this.initialValue});
 
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
+  final String? initialValue;
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
-  final TextEditingController _searchController = TextEditingController();
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text : widget.initialValue);
+  }
 
   @override
   void dispose() {
